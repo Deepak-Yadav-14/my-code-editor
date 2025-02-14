@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('versions', {
 contextBridge.exposeInMainWorld('MonacoEnvironment', {
   getWorkerUrl: (moduleId, label) => {
     return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
-      self.MonacoEnvironment = { baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/' };
-      importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/base/worker/workerMain.js');
+      self.MonacoEnvironment = { baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/' };
+      importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/base/worker/workerMain.js');
     `)}`;
   }
 });
