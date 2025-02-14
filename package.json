@@ -1,0 +1,16 @@
+{
+  "name": "my-code-editor",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "electron": "^34.2.0",
+    "monaco-editor": "^0.52.2"
+  }
+}
