@@ -2,19 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+
   <title>Electron Monaco Editor</title>
-  <style>
-    html, body, #editor {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-  </style>
+  <link rel="stylesheet" href="css/codeslate.css">
+  <link rel="stylesheet" href="titleBar.css">
 </head>
 <body>
-  <div id="editor"></div>
+  <div id="editor">
+    <div class="container">
+      <div class="titleBar titleBarStyle">
+        <!--this is title bar section-->
+        <div class="windowTitle">Unknown</div>
+        <div class="windowcontrols windowControlsStyle">
+          <!--this part is for right hand side buttons-->
+          <button id="minimise">-</button>
+          <button id="maximize">[]</button>
+          <button id="quit">x</button>
+        </div>
+      </div>
+      <div class="codingScreen">
+        <!--all screen coding will be here-->
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
   <script src="./renderer.js"></script>
 </body>
