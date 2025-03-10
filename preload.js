@@ -1,13 +1,16 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// Expose any needed versions or APIs
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
+contextBridge.exposeInMainWorld('api', {
+  checkGit: () => ipcRenderer.invoke('check-git'),
+  selectDirectory: () => ipcRenderer.invoke('select-directory'),
+  cloneRepo: (data) => ipcRenderer.invoke('clone-repo', data),
+  gitPush: (data) => ipcRenderer.send('git-push', data),
+  gitPull: (directory) => ipcRenderer.send('git-pull', directory),
+  compileCpp: (data) => ipcRenderer.send('compile-cpp', data),
+  onGitResponse: (callback) => ipcRenderer.on('git-response', (event, message) => callback(message)),
+  onCompileResponse: (callback) => ipcRenderer.on('compile-response', (event, data) => callback(data))
 });
 
-// Expose MonacoEnvironment for Monaco Web Worker loading
 contextBridge.exposeInMainWorld('MonacoEnvironment', {
   getWorkerUrl: (moduleId, label) => {
     return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
