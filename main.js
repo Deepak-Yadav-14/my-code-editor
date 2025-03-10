@@ -6,6 +6,7 @@ function createWindow() {
     width: 800,
     height: 600,
     frame: false,
+    
     webPreferences: {
       preload: path.join(app.getAppPath(), 'preload.js'),
       nodeIntegration: false, // Disable nodeIntegration for security

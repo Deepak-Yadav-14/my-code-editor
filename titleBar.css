@@ -24,6 +24,7 @@ body * {
     background: #202327;
     color: #fff;
     font-size: 10pt;
+    -webkit-app-region: drag; /* Allow dragging the window */
 }
 
 .windowTitle {
@@ -42,6 +43,7 @@ body * {
     background: none;
     color: #fff;
     font-weight: bold;
+    -webkit-app-region: no-drag; /* Prevent dragging on buttons */
 }
 
 .windowControls button:hover {
