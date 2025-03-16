@@ -9,4 +9,5 @@ window.addEventListener('DOMContentLoaded', () => {
       automaticLayout: true
     });
   });
+
 });

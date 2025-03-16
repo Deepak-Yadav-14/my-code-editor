@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-
   <title>Electron Monaco Editor</title>
-  <!-- <link rel="stylesheet" href="css/codeslate.css"> -->
-  <link rel="stylesheet" href="titleBar.css">
-  <link rel="stylesheet" href="menu.css">
-  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-     
-  <script src="js/jquery.menu.js"></script>
-  
-  
+  <link rel="stylesheet" href="css/titleBar.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/codeslate.css">
+
+  <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
+
+
+
 </head>
+
 <body>
   <div class="container">
     <div class="titleBar titleBarStyle">
@@ -26,154 +28,185 @@
         <button id="maximise">[]</button>
         <button id="quit">x</button>
       </div>
-  </div>
-  
-  <div id="menu-bar"style="color:white; background-color:#202327;">
-        <ul class="main-menu">
-            <li>
-                File
-                <ul>
-                    
-                   <li class="icon save" onclick='createNewFile()'><a href="#">New File<span>Ctrl+N</span></a></li>
-                    <li>New Folder</li>
-                    
-                    <li class="separator"></li>
-                    <li class="icon save" onclick='saveFile()'><a href="javascript:void(0)">Save<span>Ctrl+S</span></a></li>
-                    
-                    <li class="icon save" onclick="showSaveDialogAndSaveFile()"><a href="javascript:void(0)">Save As</a></li>
-                    
-                    <li class="separator"></li>
-                    
-                </ul>
+    </div>
+
+    <div id="menu-bar" style="color:white; background-color:#202327;">
+      <ul class="main-menu">
+        <li>
+          File
+          <ul>
+
+            <li class="icon save" onclick='createNewFile()'><a href="#">New File<span>Ctrl+N</span></a></li>
+            <li>New Folder</li>
+
+            <li class="separator"></li>
+            <li class="icon save" onclick='saveFile()'><a href="javascript:void(0)">Save<span>Ctrl+S</span></a></li>
+
+            <li class="icon save" onclick="showSaveDialogAndSaveFile()"><a href="javascript:void(0)">Save As</a></li>
+
+            <li class="separator"></li>
+
+          </ul>
+        </li>
+        <li>
+          View
+          <ul>
+            <li>Documents
+              <ul>
+                <li>All</li>
+                <li class="separator"></li>
+                <li>Unfinished</li>
+                <li>Closed</li>
+              </ul>
             </li>
+            <li><a href="/#!/products">Products</a></li>
+            <li class="separator"></li>
             <li>
-                View
-                <ul>
-                    <li>Documents
-                        <ul>
-                            <li>All</li>
-                            <li class="separator"></li>
-                            <li>Unfinished</li>
-                            <li>Closed</li>
-                        </ul>
-                    </li>
-                    <li><a href="/#!/products">Products</a></li>
-                    <li class="separator"></li>
+              First level
+              <ul>
+                <li>
+                  Second level
+                  <ul>
                     <li>
-                        First level
-                        <ul>
-                            <li>
-                                Second level
-                                <ul>
-                                    <li>
-                                        Third level menu item
-                                    </li>
-                                    <li>
-                                    Third level
-                                    <ul>
-                                            <li>
-                                                Forth level menu item 1
-                                            </li>
-                                            <li>
-                                                Forth level menu item 2
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="separator"></li>
-                                    <li>Another third level menu item</li>
-                                </ul>
-                            </li>
-                            <li>
-                                Items will make menus stretch as needed
-                            </li>
-                            <li class="separator"></li>
-                            <li>
-                                 Another menu item
-                            </li>
-                        </ul>
+                      Third level menu item
+                    </li>
+                    <li>
+                      Third level
+                      <ul>
+                        <li>
+                          Forth level menu item 1
+                        </li>
+                        <li>
+                          Forth level menu item 2
+                        </li>
+                      </ul>
                     </li>
                     <li class="separator"></li>
-                    <li>Reports
-                        <ul>
-                            <li>Sell history</li>
-                            <li>Clients history</li>
-                        </ul>
-                    </li>
-                </ul>
+                    <li>Another third level menu item</li>
+                  </ul>
+                </li>
+                <li>
+                  Items will make menus stretch as needed
+                </li>
+                <li class="separator"></li>
+                <li>
+                  Another menu item
+                </li>
+              </ul>
             </li>
-            <li>
-                Window
-                <ul>
-                    <li class="icon save"><a href="javascript:void(0)">Full Screen<span>F11</span></a></li>
-                   
-                    <li>
-                        <a href="javascript:void(0)" onclick='toggleWidgets()'>Widgets<span><input type='checkbox' id='widgetCheckbox'></span></a>
-                    </li>
-                    <li class="separator"></li>
-                    <li>
-                        Options
-                    </li>
-                </ul>
+            <li class="separator"></li>
+            <li>Reports
+              <ul>
+                <li>Sell history</li>
+                <li>Clients history</li>
+              </ul>
             </li>
+          </ul>
+        </li>
+        <li>
+          Window
+          <ul>
+            <li class="icon save"><a href="javascript:void(0)">Full Screen<span>F11</span></a></li>
 
             <li>
-                Tools
-                <ul>
-                    <li>Load Snippets
-                        <ul>
-                            <li>HTML</li>
-                            <li>CSS</li>
-                            <li>JS</li>
-                            <li>HTML</li>
-                            <li>CSS</li>
-                            <li>JS</li>
-                            <li>HTML</li>
-                            <li>CSS</li>
-                            <li>JS</li>
-                            <li>HTML</li>
-                            <li>CSS</li>
-                            <li>JS</li>
-                        </ul>
-                    </li>
-                    </ul>
+              <a href="javascript:void(0)" onclick='toggleWidgets()'>Widgets<span><input type='checkbox'
+                    id='widgetCheckbox'></span></a>
             </li>
-
+            <li class="separator"></li>
             <li>
-                Settings
-                <ul>
-                    <li onclick='settings("theme")'>Themes</li>
-                    <li class="separator"></li>
-                    <li>Upgrade account</li>
-                    <li>Registration</li>
-                    <li class="separator"></li>
-                    <li>Contact us</li>
-                </ul>
+              Options
             </li>
+          </ul>
+        </li>
 
-            <li>
-                Help
-                <ul>
-                    <li onclick='showShortcuts()'>Shortcuts</li>
-                    <li class="separator"></li>
-                    <li>Upgrade account</li>
-                    <li>Registration</li>
-                    <li class="separator"></li>
-                    <li>Contact us</li>
-                </ul>
+        <li>
+          Tools
+          <ul>
+            <li>Load Snippets
+              <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JS</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JS</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JS</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JS</li>
+              </ul>
             </li>
-        </ul>        
-    </div> 
-  </div>
-  
-  <div id="editor" style="height: 100vh; width: 100vw;">
-  </div>
-  <div class="codingScreen">
-  </div>
-  
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
-  <script src="./renderer.js"></script>
-  <script src = "./titleBarstuff.js"></script>
+          </ul>
+        </li>
+
+        <li>
+          Settings
+          <ul>
+            <li onclick='settings("theme")'>Themes</li>
+            <li class="separator"></li>
+            <li>Upgrade account</li>
+            <li>Registration</li>
+            <li class="separator"></li>
+            <li>Contact us</li>
+          </ul>
+        </li>
+
+        <li>
+          Help
+          <ul>
+            <li onclick='showShortcuts()'>Shortcuts</li>
+            <li class="separator"></li>
+            <li>Upgrade account</li>
+            <li>Registration</li>
+            <li class="separator"></li>
+            <li>Contact us</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="codingScreen preventSelect">
+      <!--this is the main coding screen-->
+      <div class="explorerContainer explorerContainerStyles" id="resizableExplorer">
+
+        <div class="filesContainer" style="border: 5px;">
+          <!--all the new and opened files are shown here-->
+
+        </div>
+
+        <div class="folderFiles" style="border: 5px;">
+          <!--all the contents of any folder is shown here-->
+          <div class="folderTitle">
+
+            <div id='folderName'></div>
+
+            <button id="syncFiles" title="sync files"><i class='fas fa-sync-alt'></i></button>
+            <button id="changeFolder">Change</button>
+
+          </div>
+
+          <div class="exploredFilesContainer">
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="editorContainer">
+        <div id="editor" style="height: 100vh; width: 100vw;">
+        </div>
+      </div>
+    </div>
+
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.menu.js"></script>
+    <script src="js/titleBarstuff.js"></script>
+    <script src="js/fileActions.js"></script>
+    <script src="./renderer.js"></script>
 
 </body>
+
 </html>
