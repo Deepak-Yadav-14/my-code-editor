@@ -1,11 +1,13 @@
 const { app, BrowserWindow, ipcMain , Menu, dialog} = require('electron');
 const path = require('path');
 
+const { createNewFile } = require('./js/fileOperations');
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    // frame: false,
+    frame: false,
     
     webPreferences: {
       preload: path.join(app.getAppPath(), 'preload.js'),
@@ -37,7 +39,7 @@ function createWindow() {
   // Adding the Menu Bar File save and load system
   ipcMain.on('create-new-file', () => {
     // Logic to create a new file
-    console.log('New File created');
+    createNewFile(win);
   });
 
   ipcMain.on('open-folder', async () => {
