@@ -30,18 +30,24 @@ window.addEventListener("DOMContentLoaded", () => {
       currentFolderPath = folderPath;
       document.getElementById("folderName").textContent = folderName;
       const container = document.querySelector(".exploredFilesContainer");
+      const expandedFolders = new Set();
+      container.querySelectorAll("li.expanded").forEach((li) => {
+        expandedFolders.add(li.dataset.path);
+      });
       container.innerHTML = "";
       files.forEach((file) => {
         const li = document.createElement("li");
         li.textContent = file.name;
         li.dataset.path = file.path;
-        // console.log(" Li path ", li.dataset.path);
         if (file.isDirectory) {
           li.classList.add("folderfiles");
-          li.addEventListener("click", () => {
-            console.log("toggle Folder");
-            toggleFolder(li, file.path, container);
-          });
+          if (expandedFolders.has(file.path)) {
+            li.classList.add("expanded");
+            ipcRenderer.send("load-subfolder", { parentPath: file.path });
+          }
+          li.addEventListener("click", () =>
+            toggleFolder(li, file.path, container)
+          );
         } else {
           li.classList.add("file");
           li.addEventListener("click", () => openFile(file.path));
@@ -52,10 +58,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Handle subfolder loaded
     ipcRenderer.on("subfolder-loaded", ({ parentPath, subfiles }) => {
-      console.log("Parent Path", parentPath);
       const escapedPath = parentPath.replace(/\\/g, "\\\\");
       const parentLi = document.querySelector(`li[data-path="${escapedPath}"]`);
-      console.log("Parent Li:", parentLi);
       if (parentLi) {
         subfiles.forEach((subfile) => {
           const subLi = document.createElement("li");
@@ -79,10 +83,16 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     // Handle file content
-    ipcRenderer.on("file-content", ({ filePath, content }) => {
+    ipcRenderer.on("file-content", ({ filePath, content, fileName }) => {
       monacoEditor.setValue(content);
       const index = openedFiles.findIndex((file) => file.path === filePath);
-      if (index !== -1) currentFileIndex = index;
+      if (index === -1) {
+        openedFiles.push({ path: filePath, name: fileName });
+        currentFileIndex = openedFiles.length - 1;
+      } else {
+        openedFiles[index].name = fileName;
+        currentFileIndex = index;
+      }
       updateTabs();
     });
 
@@ -93,17 +103,33 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     // Handle file saved
-    ipcRenderer.on("file-saved", (filePath) => {
-      if (currentFileIndex !== -1) {
+    ipcRenderer.on("file-saved", ({ filePath, filename }) => {
+      console.log(
+        "File saved event received, path:",
+        filePath,
+        "filename:",
+        filename
+      );
+      if (currentFileIndex === -1) {
+        openedFiles.push({ path: filePath, name: filename });
+        currentFileIndex = openedFiles.length - 1;
+      } else {
         openedFiles[currentFileIndex].path = filePath;
-        openedFiles[currentFileIndex].name = path.basename(filePath);
-        updateTabs();
+        openedFiles[currentFileIndex].name = filename;
+      }
+      updateTabs();
+
+      if (currentFolderPath && filePath.startsWith(currentFolderPath)) {
+        console.log("Saved file is in current folder, refreshing...");
+        ipcRenderer.send("refresh-folder", currentFolderPath); // Use refresh-folder instead
       }
     });
 
     // Sync files button
     document.getElementById("syncFiles").addEventListener("click", () => {
-      if (currentFolderPath) ipcRenderer.send("open-folder", currentFolderPath);
+      if (currentFolderPath) {
+        ipcRenderer.send("refresh-folder", currentFolderPath); // Refresh instead of open
+      }
     });
 
     // Change folder button
@@ -111,39 +137,6 @@ window.addEventListener("DOMContentLoaded", () => {
       ipcRenderer.send("open-folder");
     });
   });
-
-  // Handle file content
-  ipcRenderer.on("file-content", ({ filePath, content }) => {
-    monacoEditor.setValue(content);
-    const index = openedFiles.findIndex((file) => file.path === filePath);
-    if (index !== -1) currentFileIndex = index;
-    updateTabs();
-  });
-
-  // // Handle save dialog content request
-  // ipcRenderer.on("get-content-for-save", (event, filePath) => {
-  //   const content = monacoEditor.getValue();
-  //   ipcRenderer.send("save-file-as", { filePath, content });
-  // });
-
-  // // Handle file saved
-  // ipcRenderer.on("file-saved", ( filePath) => {
-  //   if (currentFileIndex !== -1) {
-  //     openedFiles[currentFileIndex].path = filePath;
-  //     openedFiles[currentFileIndex].name = path.basename(filePath);
-  //     updateTabs();
-  //   }
-  // });
-
-  // // Sync files button
-  // document.getElementById("syncFiles").addEventListener("click", () => {
-  //   if (currentFolderPath) ipcRenderer.send("open-folder", currentFolderPath);
-  // });
-
-  // // Change folder button
-  // document.getElementById("changeFolder").addEventListener("click", () => {
-  //   ipcRenderer.send("open-folder");
-  // });
 
   // File operation functions
   function createNewFile() {
@@ -155,7 +148,9 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveFile() {
-    if (currentFileIndex !== -1 && openedFiles[currentFileIndex].path) {
+    if (currentFileIndex === -1) {
+      showSaveDialogAndSaveFile();
+    } else if (openedFiles[currentFileIndex].path) {
       const filePath = openedFiles[currentFileIndex].path;
       const content = monacoEditor.getValue();
       ipcRenderer.send("save-file", { filePath, content });
@@ -171,7 +166,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function openFile(filePath) {
     const index = openedFiles.findIndex((file) => file.path === filePath);
     if (index === -1) {
-      openedFiles.push({ path: filePath, name: path.basename(filePath) });
+      openedFiles.push({ path: filePath, name: "Loading..." });
       currentFileIndex = openedFiles.length - 1;
     } else {
       currentFileIndex = index;
@@ -200,7 +195,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const tabContainer = document.querySelector(".filesContainer");
     tabContainer.innerHTML = "";
     openedFiles.forEach((file, index) => {
-      const tab = document.createElement("div");
+      const tab = document.createElement("li");
       tab.classList.add("tab");
       if (index === currentFileIndex) tab.classList.add("active");
       tab.textContent = file.name;
