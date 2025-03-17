@@ -197,7 +197,7 @@ window.addEventListener("DOMContentLoaded", () => {
     openedFiles.forEach((file, index) => {
       const tab = document.createElement("li");
       tab.classList.add("tab");
-      if (index === currentFileIndex) tab.classList.add("active");
+      if (index === currentFileIndex) tab.classList.add("selectedFile");
       tab.textContent = file.name;
       tab.addEventListener("click", () => switchToTab(index));
       const closeBtn = document.createElement("span");
