@@ -36,7 +36,7 @@
           File
           <ul>
             <li class="icon save" onclick='createNewFile()'><a href="#">New File<span>Ctrl+N</span></a></li>
-            <li>New Folder</li>
+            <li onclick='openFolder()'> <a href="#"> Open Folder</a></li>
             <li class="separator"></li>
             <li class="icon save" onclick='saveFile()'><a href="javascript:void(0)">Save<span>Ctrl+S</span></a></li>
             <li class="icon save" onclick="showSaveDialogAndSaveFile()"><a href="javascript:void(0)">Save As</a></li>
@@ -167,7 +167,6 @@
 
         <div class="filesContainer" style="border: 5px;">
           <!--all the new and opened files are shown here-->
-
         </div>
 
         <div class="folderFiles" style="border: 5px;">
