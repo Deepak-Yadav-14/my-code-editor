@@ -125,6 +125,15 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    //Compilation logic
+    ipcRenderer.on("compile-output", ({ success, output }) => {
+      if (success) {
+        alert("Compilation Successful:\n" + output);
+      } else {
+        alert("Compilation Failed:\n" + output);
+      }
+    });
+
     // Sync files button
     document.getElementById("syncFiles").addEventListener("click", () => {
       if (currentFolderPath) {
@@ -135,6 +144,27 @@ window.addEventListener("DOMContentLoaded", () => {
     // Change folder button
     document.getElementById("changeFolder").addEventListener("click", () => {
       ipcRenderer.send("open-folder");
+    });
+
+    //Compile button
+    document.getElementById("compileButton").addEventListener("click", () => {
+      if (currentFileIndex === -1 || !openedFiles[currentFileIndex].path) {
+        alert("Please save the file before compiling.");
+        showSaveDialogAndSaveFile();
+        return;
+      }
+
+      const filePath = openedFiles[currentFileIndex].path;
+      const extension = filePath.split(".").pop().toLowerCase();
+      console.log("Compiling file:", filePath, "with extension:", extension);
+
+      if (["py", "c", "cpp", "js"].includes(extension)) {
+        ipcRenderer.send("compile-code", { filePath, extension });
+      } else {
+        console.log("Opening HTML file in browser:", filePath);
+        ipcRenderer.send("open-in-browser", filePath); // Send event to main process
+        //alert(`Unsupported file type for compilation: .${extension}`);
+      }
     });
   });
 

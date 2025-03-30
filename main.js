@@ -1,6 +1,14 @@
-const { app, BrowserWindow, ipcMain, Menu, dialog } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  dialog,
+  shell,
+} = require("electron");
 const fs = require("fs");
 const path = require("path");
+const { exec } = require("child_process");
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -144,6 +152,103 @@ function createWindow() {
     });
     // console.log("Subfiles:", subfiles);
     win.webContents.send("subfolder-loaded", { parentPath, subfiles });
+  });
+
+  // Compilation logic
+  ipcMain.on("compile-code", (event, { filePath, extension }) => {
+    let command;
+
+    switch (extension) {
+      case "py":
+        command = `python "${filePath}"`;
+        break;
+      case "c":
+        command = `gcc "${filePath}" -o "${filePath.replace(
+          /\.c$/,
+          ""
+        )}" && "${filePath.replace(/\.c$/, "")}"`;
+        break;
+      case "cpp":
+        command = `g++ "${filePath}" -o "${filePath.replace(
+          /\.cpp$/,
+          ""
+        )}" && "${filePath.replace(/\.cpp$/, "")}"`;
+        break;
+      case "js":
+        command = `node "${filePath}"`;
+        break;
+      default:
+        event.reply("compile-output", {
+          success: false,
+          output: "Unsupported file type.",
+        });
+        return;
+    }
+
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Compilation error:", error);
+        event.reply("compile-output", {
+          success: false,
+          output: stderr || error.message,
+        });
+      } else {
+        event.reply("compile-output", { success: true, output: stdout });
+      }
+    });
+  });
+
+  ipcMain.on("open-in-browser", async (event, filePath) => {
+    console.log("File Path received in main process:", filePath);
+
+    if (!filePath) {
+      console.error("No file path provided to open in browser.");
+      return;
+    }
+
+    if (!fs.existsSync(filePath)) {
+      console.error("File does not exist:", filePath);
+      return;
+    }
+
+    // Normalize the file path to use forward slashes
+    const normalizedFilePath = filePath.replace(/\\/g, "/");
+
+    // List of common browsers
+    const browsers = [
+      { name: "Google Chrome", command: "chrome" },
+      { name: "Mozilla Firefox", command: "firefox" },
+      { name: "Microsoft Edge", command: "msedge" },
+      { name: "Internet Explorer", command: "iexplore" },
+    ];
+
+    // Prompt the user to select a browser
+    const selectedBrowser = await dialog.showMessageBox({
+      type: "question",
+      buttons: browsers.map((browser) => browser.name),
+      title: "Select Browser",
+      message: "Choose a browser to open the file:",
+    });
+
+    const browserIndex = selectedBrowser.response;
+    if (browserIndex < 0 || browserIndex >= browsers.length) {
+      console.error("No browser selected.");
+      return;
+    }
+
+    const browserCommand = browsers[browserIndex].command;
+
+    // Encode the normalized file path and open it with the selected browser
+    const encodedFilePath = `file://${normalizedFilePath}`;
+    console.log("Encoded File Path:", encodedFilePath);
+
+    exec(`start ${browserCommand} "${encodedFilePath}"`, (error) => {
+      if (error) {
+        console.error("Failed to open file in browser:", error.message);
+      } else {
+        console.log(`File opened in ${browsers[browserIndex].name}:`, filePath);
+      }
+    });
   });
 }
 

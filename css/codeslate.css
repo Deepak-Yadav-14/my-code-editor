@@ -194,3 +194,27 @@ width:215px;
 	width:100%;
 	font-size: 12px;
 }
+
+.compilerPanel {
+  width: 500px;
+  background: #2D3239;
+  z-index: 7;
+  color: white;
+  padding: 10px;
+  display: block; 
+  height: 100vh;
+  overflow-y: auto; 
+}
+.compilerPanel button {
+  display: block;
+  margin: 5px 0;
+  width: 100%;
+  padding: 5px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.compilerPanel button:hover {
+  background-color: #45a049;
+}

@@ -161,6 +161,14 @@
           </ul>
         </li>
       </ul>
+      <button id="runButton"
+        style="float: right; margin: 5px; padding: 5px 10px; background-color: #2196F3; color: white; border: none; cursor: pointer;">
+        Run
+      </button>
+      <button id="compileButton"
+        style="float: right; margin: 5px; padding: 5px 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+        Compile
+      </button>
     </div>
     <div class="codingScreen preventSelect">
       <!--this is the main coding screen-->
@@ -190,9 +198,16 @@
       </div>
 
       <div class="editorContainer">
-        <div id="editor" style="height: 100vh; width: 100vw;">
-        </div>
+        <div id="editor" style="height: 100vh; width: 100vw;"></div>
+
       </div>
+      <div class="compilerPanel">
+        <h3>Compilers</h3>
+        <button id="pythonCompiler">Python</button>
+        <button id="cppCompiler">C++</button>
+        <button id="jsCompiler">JavaScript</button>
+      </div>
+
     </div>
 
 
