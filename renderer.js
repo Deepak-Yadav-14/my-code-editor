@@ -26,6 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
       updateTabs();
     });
 
+    // MODIFIED: Add indentation and collapsible arrow for folders
     ipcRenderer.on("folder-opened", ({ folderPath, folderName, files }) => {
       currentFolderPath = folderPath;
       document.getElementById("folderName").textContent = folderName;
@@ -37,7 +38,21 @@ window.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = "";
       files.forEach((file) => {
         const li = document.createElement("li");
-        li.textContent = file.name;
+        const icon = document.createElement("img");
+        icon.src = file.isDirectory ? "img/folderopen.png" : "img/filesymbol.png";
+        icon.style.width = "16px";
+        icon.style.height = "16px";
+        icon.style.marginRight = "5px";
+        icon.style.verticalAlign = "middle";
+        li.appendChild(icon);
+        li.appendChild(document.createTextNode(file.name));
+        // NEW: Add arrow for folders
+        if (file.isDirectory) {
+          const arrow = document.createElement("span");
+          arrow.classList.add("folder-arrow");
+          arrow.textContent = expandedFolders.has(file.path) ? "v" : ">";
+          li.appendChild(arrow);
+        }
         li.dataset.path = file.path;
         if (file.isDirectory) {
           li.classList.add("folderfiles");
@@ -56,14 +71,28 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Handle subfolder loaded
+    // MODIFIED: Add indentation and collapsible arrow for subfolders
     ipcRenderer.on("subfolder-loaded", ({ parentPath, subfiles }) => {
       const escapedPath = parentPath.replace(/\\/g, "\\\\");
       const parentLi = document.querySelector(`li[data-path="${escapedPath}"]`);
       if (parentLi) {
         subfiles.forEach((subfile) => {
           const subLi = document.createElement("li");
-          subLi.textContent = subfile.name;
+          const icon = document.createElement("img");
+          icon.src = subfile.isDirectory ? "img/folderopen.png" : "img/filesymbol.png";
+          icon.style.width = "16px";
+          icon.style.height = "16px";
+          icon.style.marginRight = "5px";
+          icon.style.verticalAlign = "middle";
+          subLi.appendChild(icon);
+          subLi.appendChild(document.createTextNode(subfile.name));
+          // NEW: Add arrow for subfolders
+          if (subfile.isDirectory) {
+            const arrow = document.createElement("span");
+            arrow.classList.add("folder-arrow");
+            arrow.textContent = ">"; // Default to collapsed state
+            subLi.appendChild(arrow);
+          }
           subLi.dataset.path = subfile.path;
           subLi.classList.add("child");
           if (subfile.isDirectory) {
@@ -82,13 +111,11 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Handle file content
+    // Handle file content (unchanged)
     ipcRenderer.on("file-content", ({ filePath, content, fileName }) => {
       monacoEditor.setValue(content);
-
       const extension = filePath.split(".").pop().toLowerCase();
       const language = getLanguageForExtension(extension);
-
       if (language) {
         monaco.editor.setModelLanguage(monacoEditor.getModel(), language);
         console.log(`Syntax highlighting updated to: ${language}`);
@@ -97,7 +124,6 @@ window.addEventListener("DOMContentLoaded", () => {
           `No syntax highlighting available for extension: .${extension}`
         );
       }
-
       const index = openedFiles.findIndex((file) => file.path === filePath);
       if (index === -1) {
         openedFiles.push({ path: filePath, name: fileName });
@@ -106,17 +132,16 @@ window.addEventListener("DOMContentLoaded", () => {
         openedFiles[index].name = fileName;
         currentFileIndex = index;
       }
-
       updateTabs();
     });
 
-    // Handle save dialog content request
+    // Handle save dialog content request (unchanged)
     ipcRenderer.on("get-content-for-save", (filePath) => {
       const content = monacoEditor.getValue();
       ipcRenderer.send("save-file-as", { filePath, content });
     });
 
-    // Handle file saved
+    // Handle file saved (unchanged)
     ipcRenderer.on("file-saved", ({ filePath, filename }) => {
       console.log(
         "File saved event received, path:",
@@ -124,7 +149,6 @@ window.addEventListener("DOMContentLoaded", () => {
         "filename:",
         filename
       );
-
       if (currentFileIndex === -1) {
         openedFiles.push({ path: filePath, name: filename });
         currentFileIndex = openedFiles.length - 1;
@@ -133,12 +157,9 @@ window.addEventListener("DOMContentLoaded", () => {
         openedFiles[currentFileIndex].name = filename;
       }
       updateTabs();
-
       if (currentFolderPath && filePath.startsWith(currentFolderPath)) {
-        ipcRenderer.send("refresh-folder", currentFolderPath); // Refresh folder
+        ipcRenderer.send("refresh-folder", currentFolderPath);
       }
-
-      // Detect file extension and update syntax highlighting
       const extension = filePath.split(".").pop().toLowerCase();
       const language = getLanguageForExtension(extension);
       if (language) {
@@ -151,7 +172,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    //Compilation logic
+    // Compilation logic (unchanged)
     ipcRenderer.on("compile-output", ({ success, output }) => {
       const statusBar = document.getElementById("statusBar");
       if (success) {
@@ -161,43 +182,39 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Sync files button
+    // Sync files button (unchanged)
     document.getElementById("syncFiles").addEventListener("click", () => {
       if (currentFolderPath) {
-        ipcRenderer.send("refresh-folder", currentFolderPath); // Refresh instead of open
+        ipcRenderer.send("refresh-folder", currentFolderPath);
       }
     });
 
-    // Change folder button
+    // Change folder button (unchanged)
     document.getElementById("changeFolder").addEventListener("click", () => {
       ipcRenderer.send("open-folder");
     });
 
-    //Compile button
+    // Compile button (unchanged)
     document.getElementById("compileButton").addEventListener("click", () => {
       if (currentFileIndex === -1 || !openedFiles[currentFileIndex].path) {
         alert("Please save the file before compiling.");
         showSaveDialogAndSaveFile();
         return;
       }
-
       const filePath = openedFiles[currentFileIndex].path;
       const extension = filePath.split(".").pop().toLowerCase();
       console.log("Compiling file:", filePath, "with extension:", extension);
-
       if (["py", "c", "cpp", "js"].includes(extension)) {
         ipcRenderer.send("check-compiler-and-save", { filePath, extension });
       } else {
         console.log("Opening HTML file in browser:", filePath);
-        ipcRenderer.send("open-in-browser", filePath); // Send event to main process
-        //alert(`Unsupported file type for compilation: .${extension}`);
+        ipcRenderer.send("open-in-browser", filePath);
       }
     });
 
-    // Handle the result of the compiler check
+    // Handle the result of the compiler check (unchanged)
     ipcRenderer.on("compiler-check-result", ({ success, message }) => {
       if (success) {
-        // Trigger the compile-code event after the compiler is ready
         const filePath = openedFiles[currentFileIndex].path;
         const extension = filePath.split(".").pop().toLowerCase();
         ipcRenderer.send("compile-code", { filePath, extension });
@@ -206,13 +223,11 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Listen for compiler installation progress
+    // Listen for compiler installation progress (unchanged)
     ipcRenderer.on("compiler-install-progress", ({ success, message }) => {
       const progressContainer = document.getElementById("progressContainer");
       const progressText = document.getElementById("progressText");
-
       if (!progressContainer) {
-        // Create a progress modal if it doesn't exist
         const modal = document.createElement("div");
         modal.id = "progressContainer";
         modal.style.position = "fixed";
@@ -225,12 +240,10 @@ window.addEventListener("DOMContentLoaded", () => {
         modal.style.borderRadius = "8px";
         modal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
         modal.style.zIndex = "1000";
-
         const text = document.createElement("p");
         text.id = "progressText";
         text.style.margin = "0";
         modal.appendChild(text);
-
         const closeButton = document.createElement("button");
         closeButton.textContent = "Close";
         closeButton.style.marginTop = "10px";
@@ -242,12 +255,9 @@ window.addEventListener("DOMContentLoaded", () => {
         closeButton.addEventListener("click", () => {
           modal.remove();
         });
-
         modal.appendChild(closeButton);
         document.body.appendChild(modal);
       }
-
-      // Update the progress text
       const progressTextElement = document.getElementById("progressText");
       if (success) {
         progressTextElement.textContent = `Installing: ${message}`;
@@ -257,7 +267,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // File operation functions
+  // File operation functions (unchanged)
   function createNewFile() {
     ipcRenderer.send("create-new-file");
   }
@@ -290,14 +300,17 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
       currentFileIndex = index;
     }
-
     ipcRenderer.send("open-file", filePath);
     updateTabs();
   }
 
+  // MODIFIED: Update arrow on toggle
   function toggleFolder(li, folderPath, container) {
+    const arrow = li.querySelector(".folder-arrow");
     if (li.classList.contains("expanded")) {
       li.classList.remove("expanded");
+      // NEW: Change arrow to ">" when collapsing
+      if (arrow) arrow.textContent = ">";
       let next = li.nextSibling;
       while (next && next.classList.contains("child")) {
         const temp = next.nextSibling;
@@ -306,11 +319,14 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     } else {
       li.classList.add("expanded");
+      // NEW: Change arrow to "v" when expanding
+      if (arrow) arrow.textContent = "v";
       console.log("Expanding");
       ipcRenderer.send("load-subfolder", { parentPath: folderPath });
     }
   }
 
+  // Unchanged: Update tabs with file icons
   function updateTabs() {
     const tabContainer = document.querySelector(".filesContainer");
     tabContainer.innerHTML = "";
@@ -318,7 +334,14 @@ window.addEventListener("DOMContentLoaded", () => {
       const tab = document.createElement("li");
       tab.classList.add("tab");
       if (index === currentFileIndex) tab.classList.add("selectedFile");
-      tab.textContent = file.name;
+      const icon = document.createElement("img");
+      icon.src = "img/filesymbol.png";
+      icon.style.width = "16px";
+      icon.style.height = "16px";
+      icon.style.marginRight = "5px";
+      icon.style.verticalAlign = "middle";
+      tab.appendChild(icon);
+      tab.appendChild(document.createTextNode(file.name));
       tab.addEventListener("click", () => switchToTab(index));
       const closeBtn = document.createElement("span");
       closeBtn.textContent = "x";
@@ -331,18 +354,15 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Unchanged: Switch to a tab
   function switchToTab(index) {
     if (index !== currentFileIndex) {
       currentFileIndex = index;
       const filePath = openedFiles[index].path;
-
       if (filePath) {
         ipcRenderer.send("open-file", filePath);
-
-        // Update syntax highlighting based on the file extension
         const extension = filePath.split(".").pop().toLowerCase();
         const language = getLanguageForExtension(extension);
-
         if (language) {
           monaco.editor.setModelLanguage(monacoEditor.getModel(), language);
           console.log(`Syntax highlighting updated to: ${language}`);
@@ -354,11 +374,11 @@ window.addEventListener("DOMContentLoaded", () => {
       } else {
         monacoEditor.setValue("");
       }
-
       updateTabs();
     }
   }
 
+  // Unchanged: Close a tab
   function closeTab(index) {
     openedFiles.splice(index, 1);
     if (currentFileIndex === index) {
@@ -370,13 +390,13 @@ window.addEventListener("DOMContentLoaded", () => {
     updateTabs();
   }
 
-  // Expose functions to global scope for HTML onclick
+  // Expose functions to global scope (unchanged)
   window.createNewFile = createNewFile;
   window.openFolder = openFolder;
   window.saveFile = saveFile;
   window.showSaveDialogAndSaveFile = showSaveDialogAndSaveFile;
 
-  // Function to map file extensions to Monaco Editor languages
+  // Unchanged: Map file extensions to languages
   function getLanguageForExtension(extension) {
     const languageMap = {
       js: "javascript",

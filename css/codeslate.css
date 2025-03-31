@@ -1,198 +1,205 @@
-
-body{
-	background:url("../img/snippetsLogo.png") no-repeat #1c1f23;
-	background-position:60% 50%;
+body {
+  background: url("../img/snippetsLogo.png") no-repeat #1c1f23;
+  background-position: 60% 50%;
 }
 
 ::-webkit-scrollbar {
-    width: 2px;
-	height:1px;
+  width: 2px;
+  height: 1px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-    background: transparent; 
+  background: transparent;
 }
- 
-/* Handle */
+
 ::-webkit-scrollbar-thumb {
-    background: #888; 
+  background: #888;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+  background: #555;
 }
 
-::-webkit-scrollbar-corner{
-    background:transparent;
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-::-webkit-resizer{
-	background:transparent;
+::-webkit-resizer {
+  background: transparent;
 }
 
-.codeslatesContainer{
-	background:black;
-	color:#fff;
-	z-index:0;
+.codeslatesContainer {
+  background: black;
+  color: #fff;
+  z-index: 0;
 }
 
-.codingScreen{
-	display:grid;
-	z-index:5;
-	grid-template-columns: auto 1fr auto;
+.codingScreen {
+  display: grid;
+  z-index: 5;
+  grid-template-columns: auto 1fr auto;
 }
 
-.explorerContainer{
-width:215px;
+.explorerContainer {
+  width: 215px;
 }
 
-
-.explorerContainerStyles, .widgetsContainerStyles{
-	background:#2D3239;
+.explorerContainerStyles,
+.widgetsContainerStyles {
+  background: #2D3239;
 }
 
-.ui-resizable-handle .ui-resizable-se .ui-icon .ui-icon-gripsmall-diagonal-se{
-	display:none;
+.ui-resizable-handle .ui-resizable-se .ui-icon .ui-icon-gripsmall-diagonal-se {
+  display: none;
 }
 
-.codeslate{
-	z-index:1;
-	background:black;
+.codeslate {
+  z-index: 1;
+  background: black;
 }
 
-
-.filesContainer{
-	color:#fff;
-	font-family:century gothic;
-	white-space: nowrap;
-	overflow-y:scroll;
-	overflow-x:hidden;
-	max-height:250px;
+.filesContainer {
+  color: #fff;
+  font-family: century gothic;
+  white-space: nowrap;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 250px;
 }
 
-
-.folderFiles{
-	background:#1c1f23;
-	margin-top:5px;
-	margin-bottom:5px;
-	margin-left:5px;
-	margin-right:5px;
-	color:#fff;
-	
-	font-family:century gothic;
-	white-space: nowrap;
-	border-radius:4px;
-	overflow-y:scroll;
-	overflow-x:hidden;
+.folderFiles {
+  background: #1c1f23;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  color: #fff;
+  font-family: century gothic;
+  white-space: nowrap;
+  border-radius: 4px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
-.folderTitle{
-	font-size:15px;
-	padding:10px;
-	display:grid;
-	grid-template-columns: 1fr auto auto;
+.folderTitle {
+  font-size: 15px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
 }
 
-#folderName{
-	display:inline-block;
+#folderName {
+  display: inline-block;
 }
 
-
-#syncFiles, #changeFolder{
-	display: inline-block;
-    color: #fff;
-    border: 0;
-    border-radius: 3px;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 9px;
-    outline:0;    
+#syncFiles,
+#changeFolder {
+  display: inline-block;
+  color: #fff;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 9px;
+  outline: 0;
 }
 
-#syncFiles{
-	font-size:12px;
-	margin-right:10px;
-	background: transparent;
+#syncFiles {
+  font-size: 12px;
+  margin-right: 10px;
+  background: transparent;
 }
 
-#syncFiles:hover{
-	background:#262a2f;
+#syncFiles:hover {
+  background: #262a2f;
 }
 
-#changeFolder{
-    letter-spacing: 1.1;
-    background: linear-gradient(#343f4c,#2b3038);
+#changeFolder {
+  letter-spacing: 1.1;
+  background: linear-gradient(#343f4c, #2b3038);
 }
 
-
-
-.exploredFilesContainer{
-	display:flex;
-	overflow-y:scroll;
-	overflow-x:scroll;	
-	flex-direction: column;
-	max-height:350px;
-
+.exploredFilesContainer {
+  display: flex;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  flex-direction: column;
+  max-height: 350px;
 }
 
-.exploredFilesContainer li, .filesContainer li{
-	list-style: none;
-    padding-left: 20px;
- 
-	cursor:pointer;
+.exploredFilesContainer li,
+.filesContainer li {
+  list-style: none;
+  padding-left: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-
-.selectedFile{
-	background:#1c1f23;
-	margin-left:10px;
-	transition: margin 0.1s ease-in-out;
+/* NEW: Add indentation for child elements (subfiles and subfolders) */
+.exploredFilesContainer li.child {
+  padding-left: 40px; /* Indent child items further to show hierarchy */
 }
 
-.filesContainer li.selectedFile:hover{
-	background:#1c1f23;
+/* NEW: Style the folder arrow */
+.folder-arrow {
+  margin-left: 5px; /* Space between folder name and arrow */
+  color: #fff; /* Match text color */
+  font-size: 12px; /* Adjust size for visibility */
+  font-weight: bold; /* Make the arrow stand out */
 }
 
-
-.exploredFilesContainer li:hover, .filesContainer li:hover{
-	background:#262a2f;
-	
+.exploredFilesContainer img,
+.filesContainer img {
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
-
-
-.editorContainer{
-	height:100%;
-	z-index:5;
-	display:grid;
-	grid-template-rows: 1fr auto;
+.selectedFile {
+  background: #1c1f23;
+  margin-left: 10px;
+  transition: margin 0.1s ease-in-out;
 }
 
-.closeTabIcon{
-	color: #fff;
-    font-weight: bold;
-    font-size: 7px;
-    margin-top: 0px;
-    position: relative;
-    top: -2px;
-    left: -12px;
-    background: transparent;
-    transition: all 0.1s ease-in-out;
+.filesContainer li.selectedFile:hover {
+  background: #1c1f23;
 }
 
-.closeTabIcon:hover{
-	color:#1c1f22;
+.exploredFilesContainer li:hover,
+.filesContainer li:hover {
+  background: #262a2f;
 }
 
-.fileNameSpan{
-	background:transparent;
-	padding-top:4px;
-	display:inline-block;
-	padding-bottom:4px;
-	width:100%;
-	font-size: 12px;
+.editorContainer {
+  height: 100%;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.closeTabIcon {
+  color: #fff;
+  font-weight: bold;
+  font-size: 7px;
+  margin-top: 0px;
+  position: relative;
+  top: -2px;
+  left: -12px;
+  background: transparent;
+  transition: all 0.1s ease-in-out;
+}
+
+.closeTabIcon:hover {
+  color: #1c1f22;
+}
+
+.fileNameSpan {
+  background: transparent;
+  padding-top: 4px;
+  display: inline-block;
+  padding-bottom: 4px;
+  width: 100%;
+  font-size: 12px;
 }
 
 .compilerPanel {
@@ -201,10 +208,11 @@ width:215px;
   z-index: 7;
   color: white;
   padding: 10px;
-  display: block; 
+  display: block;
   height: 100vh;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
+
 .compilerPanel button {
   display: block;
   margin: 5px 0;
@@ -215,6 +223,7 @@ width:215px;
   border: none;
   cursor: pointer;
 }
+
 .compilerPanel button:hover {
   background-color: #45a049;
 }

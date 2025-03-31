@@ -13,9 +13,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
   <script src="js/libraries/fontaw.js"></script>
-
-
-
 </head>
 
 <body>
@@ -103,7 +100,6 @@
           Window
           <ul>
             <li class="icon save"><a href="javascript:void(0)">Full Screen<span>F11</span></a></li>
-
             <li>
               <a href="javascript:void(0)" onclick='toggleWidgets()'>Widgets<span><input type='checkbox'
                     id='widgetCheckbox'></span></a>
@@ -114,7 +110,6 @@
             </li>
           </ul>
         </li>
-
         <li>
           Tools
           <ul>
@@ -136,7 +131,6 @@
             </li>
           </ul>
         </li>
-
         <li>
           Settings
           <ul>
@@ -148,7 +142,6 @@
             <li>Contact us</li>
           </ul>
         </li>
-
         <li>
           Help
           <ul>
@@ -173,33 +166,21 @@
     <div class="codingScreen preventSelect">
       <!--this is the main coding screen-->
       <div class="explorerContainer explorerContainerStyles" id="resizableExplorer">
-
         <div class="filesContainer" style="border: 5px;">
           <!--all the new and opened files are shown here-->
         </div>
-
         <div class="folderFiles" style="border: 5px;">
           <!--all the contents of any folder is shown here-->
           <div class="folderTitle">
-
             <div id='folderName'></div>
-
             <button id="syncFiles" title="sync files"><i class='fas fa-sync-alt'></i></button>
             <button id="changeFolder">Change</button>
-
           </div>
-
-          <div class="exploredFilesContainer">
-
-          </div>
-
+          <div class="exploredFilesContainer"></div>
         </div>
-
       </div>
-
       <div class="editorContainer">
         <div id="editor" style="height: 100vh; width: 100vw;"></div>
-
       </div>
       <div class="compilerPanel">
         <h3>Compilers</h3>
@@ -207,19 +188,18 @@
         <button id="cppCompiler">C++</button>
         <button id="jsCompiler">JavaScript</button>
       </div>
-
     </div>
-
     <div id="statusBar"
       style="position: fixed; bottom: 0; width: 100%; background: #333; color: #fff; padding: 5px; text-align: center;">
       Ready
     </div>
 
+    <!-- Icon files (file-icon.png and folder-icon.png) should be placed in the 'img' directory relative to this file -->
+
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery.menu.js"></script>
     <script src="js/titleBarstuff.js"></script>
     <script src="./renderer.js"></script>
-
 </body>
 
 </html>
