@@ -1,7 +1,7 @@
-
 body{
 	background:url("../img/snippetsLogo.png") no-repeat #1c1f23;
 	background-position:60% 50%;
+    user-select: none; /* Disable text selection */
 }
 
 ::-webkit-scrollbar {
@@ -42,12 +42,36 @@ body{
 	display:grid;
 	z-index:5;
 	grid-template-columns: auto 1fr auto;
+    user-select: none; /* Disable text selection */
 }
 
-.explorerContainer{
-width:215px;
+/* Explorer container styles */
+.explorerContainer {
+  width: 215px; /* Default width */
+  min-width: 150px; /* Minimum width */
+  max-width: 400px; /* Optional: Maximum width */
+  position: relative;
+  overflow: hidden;
+  resize: horizontal; /* Allow horizontal resizing */
+  background: #2D3239;
+  user-select: none; /* Disable text selection */
 }
 
+/* Resizable handle styles */
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize; /* Horizontal resize cursor */
+  background: #444; /* Handle color */
+  z-index: 10;
+}
+
+.resize-handle:hover {
+  background: #666; /* Highlight handle on hover */
+}
 
 .explorerContainerStyles, .widgetsContainerStyles{
 	background:#2D3239;
@@ -70,6 +94,7 @@ width:215px;
 	overflow-y:scroll;
 	overflow-x:hidden;
 	max-height:250px;
+    user-select: none; /* Disable text selection */
 }
 
 
@@ -86,6 +111,7 @@ width:215px;
 	border-radius:4px;
 	overflow-y:scroll;
 	overflow-x:hidden;
+    user-select: none; /* Disable text selection */
 }
 
 .folderTitle{
@@ -217,4 +243,14 @@ width:215px;
 }
 .compilerPanel button:hover {
   background-color: #45a049;
+}
+
+/* Prevent text selection globally */
+body, .container, .codingScreen, .explorerContainer, .folderFiles, .filesContainer {
+  user-select: none; /* Disable text selection */
+}
+
+/* Allow text selection only in the editor */
+#editor {
+  user-select: text; /* Enable text selection in the editor */
 }
