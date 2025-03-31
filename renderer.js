@@ -411,3 +411,36 @@ window.addEventListener("DOMContentLoaded", () => {
     return languageMap[extension] || null;
   }
 });
+window.addEventListener("DOMContentLoaded", () => {
+  const explorer = document.getElementById("resizableExplorer");
+  const resizeHandle = document.getElementById("resizeHandle");
+
+  let isResizing = false;
+
+  // Mouse down event to start resizing
+  resizeHandle.addEventListener("mousedown", (e) => {
+    isResizing = true;
+    document.body.style.cursor = "ew-resize"; // Change cursor to resizing
+  });
+
+  // Mouse move event to resize the explorer
+  document.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+
+    const newWidth = e.clientX; // Get the mouse position
+    const minWidth = 150; // Minimum width
+    const maxWidth = 400; // Optional: Maximum width
+
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+      explorer.style.width = `${newWidth}px`;
+    }
+  });
+
+  // Mouse up event to stop resizing
+  document.addEventListener("mouseup", () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = "default"; // Reset cursor
+    }
+  });
+});
