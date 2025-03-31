@@ -12,5 +12,10 @@
   "dependencies": {
     "electron": "^34.2.0",
     "monaco-editor": "^0.52.2"
+  },
+  "build": {
+    "files": [
+      "resources/tdm-gcc/**/*"
+    ]
   }
 }

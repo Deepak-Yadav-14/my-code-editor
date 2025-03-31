@@ -10,6 +10,11 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 
+const tdmGccPath = path.join(__dirname, "resources", "tdm-gcc", "bin");
+process.env.PATH += `;${tdmGccPath}`;
+
+console.log("TDM-GCC added to PATH:", tdmGccPath);
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
@@ -160,22 +165,22 @@ function createWindow() {
 
     switch (extension) {
       case "py":
-        command = `python "${filePath}"`;
+        // Python files can be run directly in a new terminal
+        command = `start cmd /k python "${filePath}"`;
         break;
       case "c":
-        command = `gcc "${filePath}" -o "${filePath.replace(
-          /\.c$/,
-          ""
-        )}" && "${filePath.replace(/\.c$/, "")}"`;
+        const normalizedCPath = path.normalize(filePath);
+        const cOutputPath = normalizedCPath.replace(/\.c$/, "");
+        command = `gcc "${normalizedCPath}" -o "${cOutputPath}" && start cmd /k "${cOutputPath}"`;
         break;
       case "cpp":
-        command = `g++ "${filePath}" -o "${filePath.replace(
-          /\.cpp$/,
-          ""
-        )}" && "${filePath.replace(/\.cpp$/, "")}"`;
+        const normalizedCppPath = path.normalize(filePath);
+        const cppOutputPath = normalizedCppPath.replace(/\.cpp$/, "");
+        command = `g++ "${normalizedCppPath}" -o "${cppOutputPath}" && start cmd /k "${cppOutputPath}"`;
         break;
       case "js":
-        command = `node "${filePath}"`;
+        // JavaScript files can be run directly in a new terminal
+        command = `start cmd /k node "${filePath}"`;
         break;
       default:
         event.reply("compile-output", {
@@ -187,13 +192,17 @@ function createWindow() {
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        console.error("Compilation error:", error);
         event.reply("compile-output", {
           success: false,
           output: stderr || error.message,
         });
       } else {
-        event.reply("compile-output", { success: true, output: stdout });
+        event.reply("compile-output", {
+          success: true,
+          output:
+            stdout ||
+            "Compilation succeeded. Output displayed in a new terminal.",
+        });
       }
     });
   });
@@ -250,6 +259,115 @@ function createWindow() {
       }
     });
   });
+
+  ipcMain.on(
+    "check-compiler-and-save",
+    async (event, { filePath, extension }) => {
+      console.log("Checking compiler for extension:", extension);
+
+      // Define compilers and their check commands
+      const compilers = {
+        py: {
+          check: "python --version",
+          install:
+            "winget install -e --id Python.Python.3 --accept-source-agreements",
+        },
+        js: {
+          check: "node --version",
+          install:
+            "winget install -e --id OpenJS.NodeJS --accept-source-agreements",
+        },
+      };
+
+      if (extension === "c" || extension === "cpp") {
+        // Skip installation compile C and C++ since TDM-GCC is pre-bundled
+        ipcMain.emit("compile-code", event, { filePath, extension });
+        return;
+      }
+
+      const compiler = compilers[extension];
+      if (!compiler) {
+        console.error("Unsupported file type:", extension);
+        event.reply("compiler-check-result", {
+          success: false,
+          message: "Unsupported file type.",
+        });
+        return;
+      }
+
+      // Check if the compiler is available
+      exec(compiler.check, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Compiler not found for ${extension}:`, error.message);
+
+          // Prompt the user to install the compiler
+          dialog
+            .showMessageBox({
+              type: "warning",
+              buttons: ["Install", "Cancel"],
+              title: "Compiler Not Found",
+              message: `The required compiler for ${extension.toUpperCase()} files is not installed.\nWould you like to install it now?`,
+            })
+            .then((result) => {
+              if (result.response === 0) {
+                // Install the compiler
+                const installProcess = exec(compiler.install);
+
+                installProcess.stdout.on("data", (data) => {
+                  console.log(`Installing ${extension} compiler:`, data);
+                  event.reply("compiler-install-progress", {
+                    success: true,
+                    message: data.trim(),
+                  });
+                });
+
+                installProcess.stderr.on("data", (data) => {
+                  console.error(
+                    `Error during ${extension} compiler installation:`,
+                    data
+                  );
+                  event.reply("compiler-install-progress", {
+                    success: false,
+                    message: data.trim(),
+                  });
+                });
+
+                installProcess.on("close", (code) => {
+                  if (code === 0) {
+                    console.log(
+                      `Compiler installed successfully for ${extension}.`
+                    );
+                    event.reply("compiler-check-result", {
+                      success: true,
+                      message: `Compiler installed successfully for ${extension.toUpperCase()}.`,
+                    });
+                  } else {
+                    console.error(
+                      `Installation process exited with code ${code}.`
+                    );
+                    event.reply("compiler-check-result", {
+                      success: false,
+                      message: `Failed to install compiler for ${extension.toUpperCase()}.`,
+                    });
+                  }
+                });
+              } else {
+                event.reply("compiler-check-result", {
+                  success: false,
+                  message: `Compiler for ${extension.toUpperCase()} not installed.`,
+                });
+              }
+            });
+        } else {
+          console.log(`Compiler found for ${extension}:`, stdout || stderr);
+          event.reply("compiler-check-result", {
+            success: true,
+            message: `${extension.toUpperCase()} compiler is already installed.`,
+          });
+        }
+      });
+    }
+  );
 }
 
 // app.whenReady().then(createWindow);
