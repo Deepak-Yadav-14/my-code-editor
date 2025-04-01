@@ -269,8 +269,7 @@ function createWindow() {
       const compilers = {
         py: {
           check: "python --version",
-          install:
-            "winget install -e --id Python.Python.3 --accept-source-agreements",
+          install: "winget install python --accept-source-agreements",
         },
         js: {
           check: "node --version",

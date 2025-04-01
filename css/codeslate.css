@@ -117,6 +117,7 @@ body{
 
 #folderName {
   display: inline-block;
+  font-size: 16px;
 }
 
 #syncFiles,
@@ -170,6 +171,7 @@ body{
 .exploredFilesContainer li.child {
   padding-left: 40px; /* Indent child items further to show hierarchy */
 }
+
 
 /* NEW: Style the folder arrow */
 .folder-arrow {

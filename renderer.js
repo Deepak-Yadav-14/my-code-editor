@@ -39,7 +39,9 @@ window.addEventListener("DOMContentLoaded", () => {
       files.forEach((file) => {
         const li = document.createElement("li");
         const icon = document.createElement("img");
-        icon.src = file.isDirectory ? "img/folderopen.png" : "img/filesymbol.png";
+        icon.src = file.isDirectory
+          ? "img/folderopen.png"
+          : "img/filesymbol.png";
         icon.style.width = "16px";
         icon.style.height = "16px";
         icon.style.marginRight = "5px";
@@ -50,7 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (file.isDirectory) {
           const arrow = document.createElement("span");
           arrow.classList.add("folder-arrow");
-          arrow.textContent = expandedFolders.has(file.path) ? "v" : ">";
+          arrow.textContent = expandedFolders.has(file.path) ? "▼" : "►";
           li.appendChild(arrow);
         }
         li.dataset.path = file.path;
@@ -79,22 +81,35 @@ window.addEventListener("DOMContentLoaded", () => {
         subfiles.forEach((subfile) => {
           const subLi = document.createElement("li");
           const icon = document.createElement("img");
-          icon.src = subfile.isDirectory ? "img/folderopen.png" : "img/filesymbol.png";
+          icon.src = subfile.isDirectory
+            ? "img/folderopen.png"
+            : "img/filesymbol.png";
           icon.style.width = "16px";
           icon.style.height = "16px";
           icon.style.marginRight = "5px";
           icon.style.verticalAlign = "middle";
           subLi.appendChild(icon);
           subLi.appendChild(document.createTextNode(subfile.name));
+
           // NEW: Add arrow for subfolders
           if (subfile.isDirectory) {
             const arrow = document.createElement("span");
             arrow.classList.add("folder-arrow");
-            arrow.textContent = ">"; // Default to collapsed state
+            arrow.textContent = "►"; // Default to collapsed state
             subLi.appendChild(arrow);
           }
+
           subLi.dataset.path = subfile.path;
-          subLi.classList.add("child");
+          subLi.dataset.parent = parentPath; // Add parent path to child elements
+          subLi.classList.add("child"); // Apply the child class for indentation
+
+          // NEW: Add additional indentation for nested levels
+          const parentIndentation = parseInt(
+            parentLi.style.paddingLeft || "20",
+            10
+          );
+          subLi.style.paddingLeft = `${parentIndentation + 20}px`;
+
           if (subfile.isDirectory) {
             subLi.classList.add("folderFiles");
             subLi.addEventListener("click", () =>
@@ -304,23 +319,29 @@ window.addEventListener("DOMContentLoaded", () => {
     updateTabs();
   }
 
-  // MODIFIED: Update arrow on toggle
+  // MODIFIED: Update arrow on toggle and fix collapsing issue
   function toggleFolder(li, folderPath, container) {
     const arrow = li.querySelector(".folder-arrow");
     if (li.classList.contains("expanded")) {
       li.classList.remove("expanded");
-      // NEW: Change arrow to ">" when collapsing
-      if (arrow) arrow.textContent = ">";
+      // Change arrow to "►" when collapsing
+      if (arrow) arrow.textContent = "►";
+
+      // Remove all children recursively
       let next = li.nextSibling;
       while (next && next.classList.contains("child")) {
-        const temp = next.nextSibling;
-        container.removeChild(next);
-        next = temp;
+        if (next.dataset.parent.startsWith(folderPath)) {
+          const temp = next.nextSibling;
+          container.removeChild(next);
+          next = temp;
+        } else {
+          break;
+        }
       }
     } else {
       li.classList.add("expanded");
-      // NEW: Change arrow to "v" when expanding
-      if (arrow) arrow.textContent = "v";
+      // Change arrow to "▼" when expanding
+      if (arrow) arrow.textContent = "▼";
       console.log("Expanding");
       ipcRenderer.send("load-subfolder", { parentPath: folderPath });
     }
@@ -354,7 +375,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Unchanged: Switch to a tab
   function switchToTab(index) {
     if (index !== currentFileIndex) {
       currentFileIndex = index;
@@ -378,7 +398,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Unchanged: Close a tab
   function closeTab(index) {
     openedFiles.splice(index, 1);
     if (currentFileIndex === index) {
@@ -396,7 +415,7 @@ window.addEventListener("DOMContentLoaded", () => {
   window.saveFile = saveFile;
   window.showSaveDialogAndSaveFile = showSaveDialogAndSaveFile;
 
-  // Unchanged: Map file extensions to languages
+  // Map file extensions to languages
   function getLanguageForExtension(extension) {
     const languageMap = {
       js: "javascript",
