@@ -10,11 +10,7 @@ body * {
     box-sizing: border-box;
 }
 
-.container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+
 
 .titleBar {
     display: flex;
