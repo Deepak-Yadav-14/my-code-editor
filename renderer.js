@@ -378,10 +378,25 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Unchanged: Update tabs with file icons
+  // MODIFIED: Update tabs to hide editor and show background when no tabs are open
   function updateTabs() {
     const tabContainer = document.querySelector(".filesContainer");
     tabContainer.innerHTML = "";
+
+    if (openedFiles.length === 0) {
+      // No tabs are open, hide the editor and show the background
+      document.getElementById("editor").style.display = "none"; // Hide the editor
+      document.body.style.backgroundImage = "url('img/snippetsLogo.png')"; // Show background
+      document.body.style.backgroundPosition = "60% 50%";
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundColor = "#1c1f23";
+      return;
+    }
+
+    // Tabs are open, show the editor and hide the background
+    document.getElementById("editor").style.display = "block"; // Show the editor
+    document.body.style.backgroundImage = "none"; // Hide background
+
     openedFiles.forEach((file, index) => {
       const tab = document.createElement("li");
       tab.classList.add("tab");
@@ -396,7 +411,11 @@ window.addEventListener("DOMContentLoaded", () => {
       tab.appendChild(document.createTextNode(file.name));
       tab.addEventListener("click", () => switchToTab(index));
       const closeBtn = document.createElement("span");
-      closeBtn.textContent = "x";
+      closeBtn.textContent = "×";
+      closeBtn.style.verticalAlign = "end";
+      closeBtn.style.cursor = "pointer";
+      closeBtn.style.paddingRight = "5px";
+      closeBtn.style.marginRight = "0px";
       closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         closeTab(index);
