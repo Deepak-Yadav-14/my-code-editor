@@ -166,22 +166,18 @@ function createWindow() {
 
     switch (extension) {
       case "py":
-        // Python files can be run directly in a new terminal
-        command = `start cmd /k python "${filePath}"`;
+        command = `start cmd /k "python "${filePath}" & pause"`; // Open a new terminal, run Python, and pause
         break;
       case "c":
-        const normalizedCPath = path.normalize(filePath);
-        const cOutputPath = normalizedCPath.replace(/\.c$/, "");
-        command = `gcc "${normalizedCPath}" -o "${cOutputPath}" && start cmd /k "${cOutputPath}"`;
+        const cOutputPath = filePath.replace(/\.c$/, "");
+        command = `start cmd /k "gcc "${filePath}" -o "${cOutputPath}" && "${cOutputPath}" & pause"`; // Open a new terminal, compile C, run the program, and pause
         break;
       case "cpp":
-        const normalizedCppPath = path.normalize(filePath);
-        const cppOutputPath = normalizedCppPath.replace(/\.cpp$/, "");
-        command = `g++ "${normalizedCppPath}" -o "${cppOutputPath}" && start cmd /k "${cppOutputPath}"`;
+        const cppOutputPath = filePath.replace(/\.cpp$/, "");
+        command = `start cmd /k "g++ "${filePath}" -o "${cppOutputPath}" && "${cppOutputPath}" & pause"`; // Open a new terminal, compile C++, run the program, and pause
         break;
       case "js":
-        // JavaScript files can be run directly in a new terminal
-        command = `start cmd /k node "${filePath}"`;
+        command = `start cmd /k "node "${filePath}" & pause"`; // Open a new terminal, run Node.js, and pause
         break;
       default:
         event.reply("compile-output", {
@@ -200,9 +196,7 @@ function createWindow() {
       } else {
         event.reply("compile-output", {
           success: true,
-          output:
-            stdout ||
-            "Compilation succeeded. Output displayed in a new terminal.",
+          output: stdout || "Compilation succeeded.",
         });
       }
     });

@@ -520,3 +520,58 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleErrorPanelButton = document.getElementById("toggleErrorPanel");
+  const errorContent = document.getElementById("errorContent");
+  const errorPanel = document.querySelector(".errorPanel");
+
+  toggleErrorPanelButton.addEventListener("click", () => {
+    if (errorContent.style.display === "none") {
+      // Expand the error panel
+      errorContent.style.display = "block";
+      errorPanel.style.maxHeight = "400px"; // Adjust the height as needed
+      toggleErrorPanelButton.textContent = "Collapse";
+    } else {
+      // Collapse the error panel
+      errorContent.style.display = "none";
+      errorPanel.style.maxHeight = "50px"; // Adjust the height as needed
+      toggleErrorPanelButton.textContent = "Expand";
+    }
+  });
+
+  // Listen for compiler output and display errors in the error panel
+  // ipcRenderer.on("compile-output", ({ success, output }) => {
+  //   const errorContent = document.getElementById("errorContent");
+  //   errorContent.innerHTML = ""; // Clear previous errors
+
+  //   if (success) {
+  //     // Display success message
+  //     const successMessage = document.createElement("p");
+  //     successMessage.textContent = "Compilation Successful.";
+  //     successMessage.style.color = "green";
+  //     errorContent.appendChild(successMessage);
+  //   } else {
+  //     // Display error message
+  //     const errorMessage = document.createElement("p");
+  //     errorMessage.textContent = "Compilation Failed:";
+  //     errorMessage.style.color = "red";
+  //     errorContent.appendChild(errorMessage);
+
+  //     // Display the error details
+  //     const errorDetails = document.createElement("pre");
+  //     errorDetails.textContent = output;
+  //     errorDetails.style.color = "white";
+  //     errorDetails.style.backgroundColor = "#333";
+  //     errorDetails.style.padding = "10px";
+  //     errorDetails.style.borderRadius = "5px";
+  //     errorDetails.style.overflowX = "auto";
+  //     errorContent.appendChild(errorDetails);
+  //   }
+
+  //   // Automatically expand the error panel when an error occurs
+  //   errorContent.style.display = "block";
+  //   errorPanel.style.maxHeight = "400px";
+  //   toggleErrorPanelButton.textContent = "Collapse";
+  // });
+});

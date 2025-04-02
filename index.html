@@ -181,10 +181,23 @@
           <div class="exploredFilesContainer"></div>
         </div>
       </div>
-      <div class="editorContainer">
-        <div id="editor" style="height: 100vh; width: 100vw;"></div>
-      </div>
+      <div class="codingPanelContainer">
+        <div class="openedFileStatus"></div>
+        <div class="editorContainer">
+          <div id="editor" style="height: 100%; width: 100%;"></div>
+        </div>
 
+        <!--<div class="errorPanel">
+          <button id="toggleErrorPanel"
+            style="float: right; background: #333; color: #fff; border: none; cursor: pointer; padding: 5px; border-radius: 3px;">
+            Expand
+          </button>
+          <div id="errorContent" style="display: none; margin-top: 10px;">
+            
+            <p>No errors to display.</p>
+          </div> 
+        </div>-->
+      </div>
     </div>
 
     <!-- Icon files (file-icon.png and folder-icon.png) should be placed in the 'img' directory relative to this file -->
