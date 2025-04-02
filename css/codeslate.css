@@ -48,10 +48,11 @@ body{
   min-width: 150px; /* Minimum width */
   max-width: 400px; /* Optional: Maximum width */
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   resize: horizontal; /* Allow horizontal resizing */
   background: #2D3239;
   user-select: none; /* Disable text selection */
+  height: 710px;
 }
 
 /* Resizable handle styles */
@@ -150,9 +151,9 @@ body{
 .exploredFilesContainer {
   display: flex;
   overflow-y: scroll;
-  overflow-x: scroll;
+  overflow-x: hidden;
   flex-direction: column;
-  max-height: 100vh;
+  max-height: 645px;
 }
 
 .exploredFilesContainer li,
@@ -234,31 +235,6 @@ body{
   font-size: 12px;
 }
 
-.compilerPanel {
-  width: 500px;
-  background: #2D3239;
-  z-index: 7;
-  color: white;
-  padding: 10px;
-  display: block;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.compilerPanel button {
-  display: block;
-  margin: 5px 0;
-  width: 100%;
-  padding: 5px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.compilerPanel button:hover {
-  background-color: #45a049;
-}
 
 /* Prevent text selection globally */
 body, .container, .codingScreen, .explorerContainer, .folderFiles, .filesContainer {

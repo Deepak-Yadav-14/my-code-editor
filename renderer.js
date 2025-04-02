@@ -26,7 +26,29 @@ window.addEventListener("DOMContentLoaded", () => {
       updateTabs();
     });
 
-    // MODIFIED: Add indentation and collapsible arrow for folders
+    ipcRenderer.on("file-saved", ({ filePath, filename }) => {
+      console.log("File saved:", filePath);
+      if (currentFileIndex === -1) {
+        openedFiles.push({ path: filePath, name: filename });
+        currentFileIndex = openedFiles.length - 1;
+      } else {
+        openedFiles[currentFileIndex].path = filePath;
+        openedFiles[currentFileIndex].name = filename;
+      }
+      updateTabs();
+    });
+
+    // Add keyboard shortcuts for saving and creating new files
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && event.key === "s") {
+        event.preventDefault(); // Prevent the default browser save dialog
+        saveFile();
+      } else if (event.ctrlKey && event.key === "n") {
+        event.preventDefault(); // Prevent the default browser behavior
+        createNewFile();
+      }
+    });
+
     ipcRenderer.on("folder-opened", ({ folderPath, folderName, files }) => {
       currentFolderPath = folderPath;
       document.getElementById("folderName").textContent = folderName;
@@ -285,6 +307,10 @@ window.addEventListener("DOMContentLoaded", () => {
   // File operation functions (unchanged)
   function createNewFile() {
     ipcRenderer.send("create-new-file");
+
+    // Show the editor and hide the background
+    document.getElementById("editor").style.display = "block"; // Show the editor
+    document.body.style.backgroundImage = "none"; // Hide background
   }
 
   function openFolder() {
@@ -316,6 +342,11 @@ window.addEventListener("DOMContentLoaded", () => {
       currentFileIndex = index;
     }
     ipcRenderer.send("open-file", filePath);
+
+    // Show the editor and hide the background
+    document.getElementById("editor").style.display = "block"; // Show the editor
+    document.body.style.backgroundImage = "none"; // Hide background
+
     updateTabs();
   }
 
@@ -399,13 +430,39 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function closeTab(index) {
+    // Remove the file from the opened files array
     openedFiles.splice(index, 1);
-    if (currentFileIndex === index) {
+
+    // Determine the next file to open
+    if (openedFiles.length === 0) {
+      // If no files are left, hide the editor and show the background
       currentFileIndex = -1;
       monacoEditor.setValue("");
-    } else if (currentFileIndex > index) {
-      currentFileIndex--;
+      document.getElementById("editor").style.display = "none"; // Hide the editor
+      document.body.style.backgroundImage = "url('img/snippetsLogo.png')"; // Show background
+      document.body.style.backgroundPosition = "60% 50%";
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundColor = "#1c1f23";
+    } else {
+      // If files are still open, switch to the next available tab
+      if (currentFileIndex === index) {
+        // If the closed tab was the current tab, switch to the next tab
+        currentFileIndex = index < openedFiles.length ? index : index - 1;
+      } else if (currentFileIndex > index) {
+        // Adjust the current file index if it was after the closed tab
+        currentFileIndex--;
+      }
+
+      // Open the new current file
+      const filePath = openedFiles[currentFileIndex].path;
+      if (filePath) {
+        ipcRenderer.send("open-file", filePath);
+      } else {
+        monacoEditor.setValue("");
+      }
     }
+
+    // Update the tabs UI
     updateTabs();
   }
 
