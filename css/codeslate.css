@@ -1,0 +1,279 @@
+body{
+	background:url("../img/snippetsLogo.png") no-repeat #1c1f23;
+	background-position:60% 50%;
+    user-select: none; /* Disable text selection */
+}
+
+::-webkit-scrollbar {
+  width: 2px;
+  height: 1px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-resizer {
+  background: transparent;
+}
+
+.codeslatesContainer {
+  background: black;
+  color: #fff;
+  z-index: 0;
+}
+
+.codingScreen{
+	display:grid;
+	z-index:5;
+	grid-template-columns: auto 1fr auto;
+    user-select: none; /* Disable text selection */
+}
+
+/* Explorer container styles */
+.explorerContainer {
+  width: 215px; /* Default width */
+  min-width: 150px; /* Minimum width */
+  max-width: 400px; /* Optional: Maximum width */
+  position: relative;
+  /* overflow: hidden; */
+  resize: horizontal; /* Allow horizontal resizing */
+  background: #2D3239;
+  user-select: none; /* Disable text selection */
+  height: 710px;
+}
+
+/* Resizable handle styles */
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize; /* Horizontal resize cursor */
+  background: #444; /* Handle color */
+  z-index: 10;
+}
+
+.resize-handle:hover {
+  background: #666; /* Highlight handle on hover */
+}
+
+.explorerContainerStyles,
+.widgetsContainerStyles {
+  background: #2D3239;
+}
+
+.ui-resizable-handle .ui-resizable-se .ui-icon .ui-icon-gripsmall-diagonal-se {
+  display: none;
+}
+
+.codeslate {
+  z-index: 1;
+  background: black;
+}
+
+.filesContainer{
+	color:#fff;
+	font-family:century gothic;
+	white-space: nowrap;
+	overflow-y:scroll;
+	overflow-x:hidden;
+	max-height:250px;
+    user-select: none; /* Disable text selection */
+}
+
+.folderFiles{
+	background:#1c1f23;
+	margin-top:5px;
+	margin-bottom:5px;
+	margin-left:5px;
+	margin-right:5px;
+	color:#fff;
+	
+	font-family:century gothic;
+	white-space: nowrap;
+	border-radius:4px;
+    user-select: none; /* Disable text selection */
+}
+
+.folderTitle {
+  font-size: 15px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+}
+
+#folderName {
+  display: inline-block;
+  font-size: 16px;
+}
+
+#syncFiles,
+#changeFolder {
+  display: inline-block;
+  color: #fff;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 12px;
+  outline: 0;
+}
+
+#syncFiles {
+  font-size: 12px;
+  margin-right: 10px;
+  background: transparent;
+}
+
+#syncFiles:hover {
+  background: #262a2f;
+}
+
+#changeFolder {
+  letter-spacing: 1.1;
+  background: linear-gradient(#343f4c, #2b3038);
+}
+
+.exploredFilesContainer {
+  display: flex;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  flex-direction: column;
+  max-height: 645px;
+}
+
+.exploredFilesContainer li,
+.filesContainer li {
+  list-style: none;
+  padding-left: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid transparent; /* Gray line separator */
+}
+
+/* NEW: Add indentation for child elements (subfiles and subfolders) */
+.exploredFilesContainer li.child {
+  padding-left: 40px; /* Indent child items further to show hierarchy */
+}
+
+
+/* NEW: Style the folder arrow */
+.folder-arrow {
+  margin-left: 5px; /* Space between folder name and arrow */
+  color: #fff; /* Match text color */
+  font-size: 12px; /* Adjust size for visibility */
+  font-weight: bold; /* Make the arrow stand out */
+}
+
+.exploredFilesContainer img,
+.filesContainer img {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.selectedFile {
+  background: #1c1f23;
+  margin-left: 10px;
+  transition: margin 0.1s ease-in-out;
+}
+
+.filesContainer li.selectedFile:hover {
+  background: #1c1f23;
+}
+
+.exploredFilesContainer li:hover,
+.filesContainer li:hover {
+  background: #262a2f; /* Darker background on hover */
+}
+
+.editorContainer {
+  height: 100%;
+  z-index: 5;
+}
+
+.codingPanelContainer {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 720px;
+  width: 100%;
+}
+
+
+.errorPanel {
+  background: #4e545b;
+  width: 100%;
+  max-height: 50px; /* Default collapsed height */
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  overflow: hidden; /* Hide content when collapsed */
+  transition: max-height 0.3s ease; /* Smooth transition */
+  height: 400px;
+}
+
+.errorPanel button {
+  background: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.errorPanel button:hover {
+  background: #444;
+}
+
+.closeTabIcon {
+  color: #fff;
+  font-weight: bold;
+  font-size: 7px;
+  margin-top: 0px;
+  position: relative;
+  top: -2px;
+  left: -12px;
+  background: transparent;
+  transition: all 0.1s ease-in-out;
+}
+
+.closeTabIcon:hover {
+  color: #1c1f22;
+}
+
+.fileNameSpan {
+  background: transparent;
+  padding-top: 4px;
+  display: inline-block;
+  padding-bottom: 4px;
+  width: 100%;
+  font-size: 12px;
+}
+
+
+/* Prevent text selection globally */
+body, .container, .codingScreen, .explorerContainer, .folderFiles, .filesContainer {
+  user-select: none; /* Disable text selection */
+}
+
+/* Allow text selection only in the editor */
+#editor {
+  user-select: text; /* Enable text selection in the editor */
+}
