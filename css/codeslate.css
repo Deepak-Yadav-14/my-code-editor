@@ -45,14 +45,14 @@ body{
 /* Explorer container styles */
 .explorerContainer {
   width: 215px; /* Default width */
-  min-width: 150px; /* Minimum width */
+  min-width: 285px; /* Minimum width */
   max-width: 400px; /* Optional: Maximum width */
   position: relative;
   /* overflow: hidden; */
   resize: horizontal; /* Allow horizontal resizing */
   background: #2D3239;
   user-select: none; /* Disable text selection */
-  height: 710px;
+  height: 740px;
 }
 
 /* Resizable handle styles */
@@ -153,7 +153,7 @@ body{
   overflow-y: scroll;
   overflow-x: hidden;
   flex-direction: column;
-  max-height: 645px;
+  max-height: 675px;
 }
 
 .exploredFilesContainer li,

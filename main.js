@@ -19,7 +19,6 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    fullscreen: true,
     frame: false,
 
     webPreferences: {
@@ -264,7 +263,7 @@ function createWindow() {
       const compilers = {
         py: {
           check: "python --version",
-          install: "winget install python --accept-source-agreements",
+          install: "winget install python --accept-source-agreements --accept-package-agreements",
         },
         js: {
           check: "node --version",
