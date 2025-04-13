@@ -6,11 +6,13 @@
 
 ul.main-menu
 {
+    max-height: 20px;
     list-style-type: none;
     margin: 0px 1cm 10px 0px;
     padding: 0px;  
     border-top:white;  
     border-width: 1cm;
+    overflow: hidden;
 }       
 ul.main-menu > li
 {
