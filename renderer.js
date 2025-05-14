@@ -305,7 +305,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("gitButton").addEventListener("click", async () => {
-      ipcRenderer.send("git-check-login");
+      ipcRenderer.send("git-check-login", currentFolderPath);
     });
 
     // Listen for Git login prompt
@@ -315,16 +315,13 @@ window.addEventListener("DOMContentLoaded", () => {
         message: "Enter your GitHub username:",
       });
 
-      if (username) {
-        const password = await ipcRenderer.invoke("show-input-dialog", {
-          title: "GitHub Login",
-          message: "Enter your GitHub password:",
-          type: "password",
-        });
+      const email = await ipcRenderer.invoke("show-input-dialog", {
+        title: "GitHub Login",
+        message: "Enter your GitHub email:",
+      });
 
-        if (password) {
-          ipcRenderer.send("git-login", { username, password });
-        }
+      if (username && email) {
+        ipcRenderer.send("git-login", { username, email });
       }
     });
 

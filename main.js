@@ -11,6 +11,7 @@ const path = require("path");
 const { exec } = require("child_process");
 const simpleGit = require("simple-git");
 const git = simpleGit();
+const axios = require("axios");
 
 const tdmGccPath = path.join(__dirname, "resources", "tdm-gcc", "bin");
 process.env.PATH += `;${tdmGccPath}`;
@@ -366,9 +367,11 @@ function createWindow() {
     }
   );
 
-  ipcMain.on("git-check-login", async (event) => {
+  ipcMain.on("git-check-login", async (event, directoryPath) => {
     try {
-      const isRepo = await git.checkIsRepo();
+      const gitInstance = simpleGit(directoryPath);
+      const isRepo = await gitInstance.checkIsRepo();
+      console.log("Is this a Git repository?", isRepo);
       if (!isRepo) {
         event.reply("git-repo-options");
       } else {
@@ -394,12 +397,57 @@ function createWindow() {
 
   ipcMain.on("git-create-repo", async (event, { repoName }) => {
     try {
-      await git.init();
-      await git.addRemote("origin", `https://github.com/${repoName}.git`);
-      console.log("Repository created and linked.");
+      const gitInstance = simpleGit(); // Initialize simple-git for the current directory
+
+      // Check if the user is logged in by verifying GitHub credentials
+      const username = await gitInstance.getConfig("user.name");
+      const email = await gitInstance.getConfig("user.email");
+
+      if (!username.value || !email.value) {
+        event.reply("git-login-prompt"); // Prompt the user to log in
+        return;
+      }
+
+      // Initialize the repository if not already initialized
+      await gitInstance.init();
+
+      // Check if the remote 'origin' already exists
+      const remotes = await gitInstance.getRemotes();
+      const originExists = remotes.some((remote) => remote.name === "origin");
+
+      if (originExists) {
+        // Update the existing remote URL
+        await gitInstance.remote([
+          "set-url",
+          "origin",
+          `https://github.com/${username.value}/${repoName}.git`,
+        ]);
+        console.log(
+          "Remote 'origin' updated to:",
+          `https://github.com/${username.value}/${repoName}.git`
+        );
+      } else {
+        // Add the remote if it doesn't exist
+        await gitInstance.addRemote(
+          "origin",
+          `https://github.com/${username.value}/${repoName}.git`
+        );
+        console.log(
+          "Remote 'origin' added:",
+          `https://github.com/${username.value}/${repoName}.git`
+        );
+      }
+
+      // Push the repository to GitHub
+      await gitInstance.add("./*"); // Stage all files
+      await gitInstance.commit("Initial commit"); // Commit the changes
+      await gitInstance.push("origin", "main"); // Push to the main branch
+
+      console.log("Repository created and pushed to GitHub.");
       event.reply("git-operations");
     } catch (error) {
       console.error("Git create repo error:", error);
+      event.reply("git-create-repo-error", error.message);
     }
   });
 
@@ -442,8 +490,13 @@ function createWindow() {
 
   ipcMain.on("git-view", async () => {
     try {
-      const repoUrl = await git.getConfig("remote.origin.url");
-      shell.openExternal(repoUrl.value);
+      const gitInstance = simpleGit();
+      const repoUrl = await gitInstance.getConfig("remote.origin.url");
+      if (repoUrl.value) {
+        shell.openExternal(repoUrl.value.replace(".git", ""));
+      } else {
+        console.error("No remote URL found.");
+      }
     } catch (error) {
       console.error("Git view error:", error);
     }
@@ -509,6 +562,25 @@ function createWindow() {
       return options[response]; // Return the selected option
     }
   );
+
+  ipcMain.on("create-github-repo", async (event, { repoName, token }) => {
+    try {
+      const response = await axios.post(
+        "https://api.github.com/user/repos",
+        { name: repoName },
+        {
+          headers: {
+            Authorization: `token ${token}`,
+          },
+        }
+      );
+      console.log("GitHub repository created:", response.data.html_url);
+      event.reply("github-repo-created", response.data.html_url);
+    } catch (error) {
+      console.error("Error creating GitHub repository:", error);
+      event.reply("github-repo-error", error.message);
+    }
+  });
 }
 
 // app.whenReady().then(createWindow);
