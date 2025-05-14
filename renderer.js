@@ -360,19 +360,16 @@ window.addEventListener("DOMContentLoaded", () => {
           message: "Choose an action:",
           options: ["Commit", "Push", "Pull", "View on GitHub"],
         })
-        .then((action) => {
+        .then(async (action) => {
           switch (action) {
             case "Commit":
-              ipcRenderer
-                .invoke("show-input-dialog", {
-                  title: "Commit Changes",
-                  message: "Enter commit message:",
-                })
-                .then((commitMessage) => {
-                  if (commitMessage) {
-                    ipcRenderer.send("git-commit", { message: commitMessage });
-                  }
-                });
+              const commitMessage = await showInputDialog({
+                title: "Commit Changes",
+                message: "Enter commit message:",
+              });
+              if (commitMessage) {
+                ipcRenderer.send("git-commit", { message: commitMessage });
+              }
               break;
             case "Push":
               ipcRenderer.send("git-push");
@@ -680,3 +677,38 @@ document.addEventListener("DOMContentLoaded", () => {
   //   toggleErrorPanelButton.textContent = "Collapse";
   // });
 });
+
+function showInputDialog({ title, message }) {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById("inputDialog");
+    const dialogTitle = document.getElementById("inputDialogTitle");
+    const dialogMessage = document.getElementById("inputDialogMessage");
+    const dialogInput = document.getElementById("inputDialogInput");
+    const dialogCancel = document.getElementById("inputDialogCancel");
+    const dialogSubmit = document.getElementById("inputDialogSubmit");
+
+    dialogTitle.textContent = title || "Input";
+    dialogMessage.textContent = message || "Enter your input:";
+    dialogInput.value = ""; // Clear previous input
+    dialog.style.display = "block";
+
+    const closeDialog = () => {
+      dialog.style.display = "none";
+      dialogCancel.removeEventListener("click", onCancel);
+      dialogSubmit.removeEventListener("click", onSubmit);
+    };
+
+    const onCancel = () => {
+      closeDialog();
+      resolve(null); // Resolve with null if canceled
+    };
+
+    const onSubmit = () => {
+      closeDialog();
+      resolve(dialogInput.value); // Resolve with the input value
+    };
+
+    dialogCancel.addEventListener("click", onCancel);
+    dialogSubmit.addEventListener("click", onSubmit);
+  });
+}

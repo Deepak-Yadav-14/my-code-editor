@@ -210,6 +210,21 @@
     <script src="js/jquery.menu.js"></script>
     <script src="js/titleBarstuff.js"></script>
     <script src="./renderer.js"></script>
+
+    <div id="inputDialog"
+      style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000;">
+      <h3 id="inputDialogTitle" style="margin: 0 0 10px;">Input</h3>
+      <p id="inputDialogMessage" style="margin: 0 0 10px;">Enter your input:</p>
+      <input id="inputDialogInput" type="text"
+        style="width: 100%; padding: 8px; margin-bottom: 10px; border: none; border-radius: 4px;" />
+      <div style="text-align: right;"> jtvk
+        <button id="inputDialogCancel"
+          style="background: #555; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Cancel</button>
+        <button id="inputDialogSubmit"
+          style="background: #4CAF50; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Submit</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
