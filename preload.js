@@ -8,11 +8,11 @@ contextBridge.exposeInMainWorld("versions", {
 });
 // Expose ipcRenderer to the renderer process
 contextBridge.exposeInMainWorld("electron", {
-  ipcRenderer: {
-    send: (channel, data) => ipcRenderer.send(channel, data),
-    on: (channel, func) =>
-      ipcRenderer.on(channel, (event, ...args) => func(...args)),
-  },
+  // ipcRenderer: {
+  //   send: (channel, data) => ipcRenderer.send(channel, data),
+  //   on: (channel, func) =>
+  //     ipcRenderer.on(channel, (event, ...args) => func(...args)),
+  // },
 });
 
 // Expose MonacoEnvironment for Monaco Web Worker loading
@@ -26,7 +26,8 @@ contextBridge.exposeInMainWorld("MonacoEnvironment", {
 });
 
 contextBridge.exposeInMainWorld("ipcRenderer", {
-  invoke: (channel, args) => ipcRenderer.invoke(channel, args),
-  send: (channel, args) => ipcRenderer.send(channel, args),
-  on: (channel, listener) => ipcRenderer.on(channel, listener),
+  invoke: (channel, data) => ipcRenderer.invoke(channel, data),
+  send: (channel, data) => ipcRenderer.send(channel, data),
+  on: (channel, func) =>
+    ipcRenderer.on(channel, (event, ...args) => func(...args)),
 });

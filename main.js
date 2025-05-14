@@ -77,6 +77,7 @@ function createWindow() {
         isDirectory: fs.statSync(fullpath).isDirectory(),
       };
     });
+    // console.log("Files in folder:", files);
     win.webContents.send("folder-opened", { folderPath, folderName, files });
   });
 

@@ -50,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     ipcRenderer.on("folder-opened", ({ folderPath, folderName, files }) => {
+      console.log("Folder opened:", folderPath, folderName, files);
       currentFolderPath = folderPath;
       document.getElementById("folderName").textContent = folderName;
       const container = document.querySelector(".exploredFilesContainer");
