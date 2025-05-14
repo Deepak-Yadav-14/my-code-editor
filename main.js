@@ -9,6 +9,8 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
+const simpleGit = require("simple-git");
+const git = simpleGit();
 
 const tdmGccPath = path.join(__dirname, "resources", "tdm-gcc", "bin");
 process.env.PATH += `;${tdmGccPath}`;
@@ -263,7 +265,8 @@ function createWindow() {
       const compilers = {
         py: {
           check: "python --version",
-          install: "winget install python --accept-source-agreements --accept-package-agreements",
+          install:
+            "winget install python --accept-source-agreements --accept-package-agreements",
         },
         js: {
           check: "node --version",
@@ -359,6 +362,141 @@ function createWindow() {
           });
         }
       });
+    }
+  );
+
+  ipcMain.on("git-check-login", async (event) => {
+    try {
+      const isRepo = await git.checkIsRepo();
+      if (!isRepo) {
+        event.reply("git-repo-options");
+      } else {
+        event.reply("git-operations");
+      }
+    } catch (error) {
+      console.error("Git error:", error);
+      event.reply("git-login-prompt");
+    }
+  });
+
+  ipcMain.on("git-login", async (event, { username, password }) => {
+    try {
+      await git.addConfig("user.name", username);
+      await git.addConfig("user.password", password);
+      console.log("GitHub login successful.");
+      event.reply("git-repo-options");
+    } catch (error) {
+      console.error("Git login error:", error);
+      event.reply("git-login-prompt");
+    }
+  });
+
+  ipcMain.on("git-create-repo", async (event, { repoName }) => {
+    try {
+      await git.init();
+      await git.addRemote("origin", `https://github.com/${repoName}.git`);
+      console.log("Repository created and linked.");
+      event.reply("git-operations");
+    } catch (error) {
+      console.error("Git create repo error:", error);
+    }
+  });
+
+  ipcMain.on("git-use-existing-repo", async (event) => {
+    try {
+      console.log("Using existing repository.");
+      event.reply("git-operations");
+    } catch (error) {
+      console.error("Git use existing repo error:", error);
+    }
+  });
+
+  ipcMain.on("git-commit", async (event, { message }) => {
+    try {
+      await git.add("./*");
+      await git.commit(message);
+      console.log("Changes committed.");
+    } catch (error) {
+      console.error("Git commit error:", error);
+    }
+  });
+
+  ipcMain.on("git-push", async () => {
+    try {
+      await git.push("origin", "main");
+      console.log("Changes pushed to GitHub.");
+    } catch (error) {
+      console.error("Git push error:", error);
+    }
+  });
+
+  ipcMain.on("git-pull", async () => {
+    try {
+      await git.pull("origin", "main");
+      console.log("Changes pulled from GitHub.");
+    } catch (error) {
+      console.error("Git pull error:", error);
+    }
+  });
+
+  ipcMain.on("git-view", async () => {
+    try {
+      const repoUrl = await git.getConfig("remote.origin.url");
+      shell.openExternal(repoUrl.value);
+    } catch (error) {
+      console.error("Git view error:", error);
+    }
+  });
+
+  ipcMain.handle(
+    "show-input-dialog",
+    async (event, { title, message, type }) => {
+      const result = await dialog.showMessageBox({
+        type: "question",
+        buttons: ["OK", "Cancel"],
+        title: title || "Input",
+        message: message || "Enter input:",
+        noLink: true, // Prevents "Don't ask me again" checkbox
+      });
+
+      if (result.response === 0) {
+        // Simulate input value (since dialog.showMessageBox doesn't support input fields)
+        const input = await dialog.showMessageBox({
+          type: "question",
+          buttons: ["Submit"],
+          title: title || "Input",
+          message: message || "Enter input:",
+          detail:
+            "Simulated input dialog. Replace with a custom input dialog if needed.",
+        });
+        return input.response === 0 ? "Simulated Input Value" : null;
+      }
+      return null; // User canceled
+    }
+  );
+
+  ipcMain.handle("show-confirm-dialog", async (event, { title, message }) => {
+    const { response } = await dialog.showMessageBox({
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: title || "Confirm",
+      message: message || "Are you sure?",
+    });
+
+    return response === 0; // Return true if "Yes" was clicked
+  });
+
+  ipcMain.handle(
+    "show-select-dialog",
+    async (event, { title, message, options }) => {
+      const { response } = await dialog.showMessageBox({
+        type: "question",
+        buttons: options,
+        title: title || "Select",
+        message: message || "Choose an option:",
+      });
+
+      return options[response]; // Return the selected option
     }
   );
 }

@@ -302,6 +302,92 @@ window.addEventListener("DOMContentLoaded", () => {
         progressTextElement.textContent = `Error: ${message}`;
       }
     });
+
+    document.getElementById("gitButton").addEventListener("click", async () => {
+      ipcRenderer.send("git-check-login");
+    });
+
+    // Listen for Git login prompt
+    ipcRenderer.on("git-login-prompt", async () => {
+      const username = await ipcRenderer.invoke("show-input-dialog", {
+        title: "GitHub Login",
+        message: "Enter your GitHub username:",
+      });
+
+      if (username) {
+        const password = await ipcRenderer.invoke("show-input-dialog", {
+          title: "GitHub Login",
+          message: "Enter your GitHub password:",
+          type: "password",
+        });
+
+        if (password) {
+          ipcRenderer.send("git-login", { username, password });
+        }
+      }
+    });
+
+    // Listen for repository options
+    ipcRenderer.on("git-repo-options", async () => {
+      ipcRenderer
+        .invoke("show-confirm-dialog", {
+          title: "Git Repository",
+          message: "Do you want to create a new repository?",
+        })
+        .then((createRepo) => {
+          if (createRepo) {
+            ipcRenderer
+              .invoke("show-input-dialog", {
+                title: "New Repository",
+                message: "Enter the name of the new repository:",
+              })
+              .then((repoName) => {
+                if (repoName) {
+                  ipcRenderer.send("git-create-repo", { repoName });
+                }
+              });
+          } else {
+            ipcRenderer.send("git-use-existing-repo");
+          }
+        });
+    });
+
+    // Listen for Git operations (commit, push, pull)
+    ipcRenderer.on("git-operations", async () => {
+      ipcRenderer
+        .invoke("show-select-dialog", {
+          title: "Git Operations",
+          message: "Choose an action:",
+          options: ["Commit", "Push", "Pull", "View on GitHub"],
+        })
+        .then((action) => {
+          switch (action) {
+            case "Commit":
+              ipcRenderer
+                .invoke("show-input-dialog", {
+                  title: "Commit Changes",
+                  message: "Enter commit message:",
+                })
+                .then((commitMessage) => {
+                  if (commitMessage) {
+                    ipcRenderer.send("git-commit", { message: commitMessage });
+                  }
+                });
+              break;
+            case "Push":
+              ipcRenderer.send("git-push");
+              break;
+            case "Pull":
+              ipcRenderer.send("git-pull");
+              break;
+            case "View on GitHub":
+              ipcRenderer.send("git-view");
+              break;
+            default:
+              console.log("No action selected.");
+          }
+        });
+    });
   });
 
   // File operation functions (unchanged)

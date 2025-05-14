@@ -277,3 +277,16 @@ body, .container, .codingScreen, .explorerContainer, .folderFiles, .filesContain
 #editor {
   user-select: text; /* Enable text selection in the editor */
 }
+
+#gitButton {
+  background-color: #FF5722;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 5px;
+}
+
+#gitButton:hover {
+  background-color: #E64A19;
+}
