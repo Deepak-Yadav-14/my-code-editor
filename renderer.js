@@ -305,7 +305,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("gitButton").addEventListener("click", async () => {
-      ipcRenderer.send("git-check-login", currentFolderPath);
+      ipcRenderer.send("git-check-login", currentFolderPath); // Pass the current folder path
     });
 
     // Listen for Git login prompt
@@ -345,36 +345,37 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Listen for Git operations (commit, push, pull)
     ipcRenderer.on("git-operations", async () => {
-      ipcRenderer
-        .invoke("show-select-dialog", {
-          title: "Git Operations",
-          message: "Choose an action:",
-          options: ["Commit", "Push", "Pull", "View on GitHub"],
-        })
-        .then(async (action) => {
-          switch (action) {
-            case "Commit":
-              const commitMessage = await showInputDialog({
-                title: "Commit Changes",
-                message: "Enter commit message:",
-              });
-              if (commitMessage) {
-                ipcRenderer.send("git-commit", { message: commitMessage });
-              }
-              break;
-            case "Push":
-              ipcRenderer.send("git-push");
-              break;
-            case "Pull":
-              ipcRenderer.send("git-pull");
-              break;
-            case "View on GitHub":
-              ipcRenderer.send("git-view");
-              break;
-            default:
-              console.log("No action selected.");
+      const action = await ipcRenderer.invoke("show-select-dialog", {
+        title: "Git Operations",
+        message: "Choose an action:",
+        options: ["Commit", "Push", "Pull", "View on GitHub"],
+      });
+
+      switch (action) {
+        case "Commit":
+          const commitMessage = await showInputDialog({
+            title: "Commit Changes",
+            message: "Enter commit message:",
+          });
+          if (commitMessage) {
+            ipcRenderer.send("git-commit", {
+              message: commitMessage,
+              directoryPath: currentFolderPath,
+            });
           }
-        });
+          break;
+        case "Push":
+          ipcRenderer.send("git-push", currentFolderPath); // Pass the current folder path
+          break;
+        case "Pull":
+          ipcRenderer.send("git-pull", currentFolderPath); // Pass the current folder path
+          break;
+        case "View on GitHub":
+          ipcRenderer.send("git-view", currentFolderPath); // Pass the current folder path
+          break;
+        default:
+          console.log("No action selected.");
+      }
     });
   });
 

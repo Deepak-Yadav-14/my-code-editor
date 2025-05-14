@@ -369,7 +369,7 @@ function createWindow() {
 
   ipcMain.on("git-check-login", async (event, directoryPath) => {
     try {
-      const gitInstance = simpleGit(directoryPath);
+      const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
       const isRepo = await gitInstance.checkIsRepo();
       console.log("Is this a Git repository?", isRepo);
       if (!isRepo) {
@@ -545,19 +545,21 @@ function createWindow() {
     }
   });
 
-  ipcMain.on("git-commit", async (event, { message }) => {
+  ipcMain.on("git-commit", async (event, { message, directoryPath }) => {
     try {
-      await git.add("./*"); // Stage all changes
-      await git.commit(message); // Commit with the provided message
+      const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
+      await gitInstance.add("./*"); // Stage all changes
+      await gitInstance.commit(message); // Commit with the provided message
       console.log("Changes committed.");
     } catch (error) {
       console.error("Git commit error:", error);
     }
   });
 
-  ipcMain.on("git-push", async () => {
+  ipcMain.on("git-push", async (event, directoryPath) => {
     try {
-      await git.push("origin", "master"); // Push the main branch to the remote repository
+      const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
+      await gitInstance.push("origin", "main"); // Push the main branch to the remote repository
       console.log("Changes pushed to GitHub.");
     } catch (error) {
       console.error("Git push error:", error);
