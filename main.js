@@ -445,6 +445,41 @@ function createWindow() {
     }
   });
 
+  ipcMain.on("git-create-repo", async (event, { currentFolderPath }) => {
+    try {
+      // Open the GitHub "Create Repository" page in the default browser
+      const createRepoUrl = "https://github.com/new";
+      shell.openExternal(createRepoUrl);
+
+      // Notify the renderer process to prompt the user for the repository URL
+      event.reply("prompt-repo-url");
+    } catch (error) {
+      console.error(
+        "Error redirecting to GitHub Create Repository page:",
+        error
+      );
+      event.reply("git-create-repo-error", error.message);
+    }
+  });
+
+  ipcMain.on(
+    "git-clone-repo",
+    async (event, { repoUrl, currentFolderPath }) => {
+      try {
+        const gitInstance = simpleGit(currentFolderPath); // Initialize simple-git for the current directory
+
+        // Clone the repository into the current working directory
+        await gitInstance.clone(repoUrl, currentFolderPath);
+        console.log("Repository cloned successfully:", repoUrl);
+
+        event.reply("git-clone-success");
+      } catch (error) {
+        console.error("Error cloning repository:", error);
+        event.reply("git-clone-error", error.message);
+      }
+    }
+  );
+
   ipcMain.on("git-create-repo", async (event, { repoName }) => {
     try {
       const gitInstance = simpleGit(); // Initialize simple-git for the current directory

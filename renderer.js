@@ -327,27 +327,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Listen for repository options
     ipcRenderer.on("git-repo-options", async () => {
-      ipcRenderer
-        .invoke("show-confirm-dialog", {
-          title: "Git Repository",
-          message: "Do you want to create a new repository?",
-        })
-        .then((createRepo) => {
-          if (createRepo) {
-            ipcRenderer
-              .invoke("show-input-dialog", {
-                title: "New Repository",
-                message: "Enter the name of the new repository:",
-              })
-              .then((repoName) => {
-                if (repoName) {
-                  ipcRenderer.send("git-create-repo", { repoName });
-                }
-              });
-          } else {
-            ipcRenderer.send("git-use-existing-repo");
-          }
+      // Redirect the user to create a repository
+      ipcRenderer.send("git-create-repo", { currentFolderPath });
+
+      // Listen for the prompt to enter the repository URL
+      ipcRenderer.on("prompt-repo-url", async () => {
+        const repoUrl = await showInputDialog({
+          title: "Clone Repository",
+          message: "Enter the URL of the repository you just created:",
         });
+
+        if (repoUrl) {
+          ipcRenderer.send("git-clone-repo", { repoUrl, currentFolderPath });
+        }
+      });
     });
 
     // Listen for Git operations (commit, push, pull)
