@@ -276,6 +276,8 @@ body, .container, .codingScreen, .explorerContainer, .folderFiles, .filesContain
 /* Allow text selection only in the editor */
 #editor {
   user-select: text; /* Enable text selection in the editor */
+  height: 100%;
+  width: 100%;
 }
 
 #gitButton {
