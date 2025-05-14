@@ -373,13 +373,63 @@ function createWindow() {
       const isRepo = await gitInstance.checkIsRepo();
       console.log("Is this a Git repository?", isRepo);
       if (!isRepo) {
-        event.reply("git-repo-options");
+        event.reply("git-repo-options"); // Prompt user for options
       } else {
-        event.reply("git-operations");
+        event.reply("git-operations"); // Proceed with Git operations
       }
     } catch (error) {
       console.error("Git error:", error);
       event.reply("git-login-prompt");
+    }
+  });
+
+  ipcMain.on("git-repo-options", async (event) => {
+    try {
+      const action = await dialog.showMessageBox({
+        type: "question",
+        buttons: [
+          "Create New Repository",
+          "Clone Existing Repository",
+          "Cancel",
+        ],
+        title: "Git Repository",
+        message: "No repository found. What would you like to do?",
+      });
+
+      if (action.response === 0) {
+        // Create a new repository
+        const repoName = await dialog.showInputBox({
+          title: "New Repository",
+          message: "Enter the name of the new repository:",
+        });
+
+        if (repoName) {
+          ipcMain.emit("git-create-repo", event, { repoName });
+        }
+      } else if (action.response === 1) {
+        // Clone an existing repository
+        const repoUrl = await dialog.showInputBox({
+          title: "Clone Repository",
+          message: "Enter the URL of the repository to clone:",
+        });
+
+        if (repoUrl) {
+          const gitInstance = simpleGit();
+          const clonePath = await dialog.showOpenDialog({
+            title: "Select Folder to Clone Into",
+            properties: ["openDirectory"],
+          });
+
+          if (!clonePath.canceled && clonePath.filePaths.length > 0) {
+            await gitInstance.clone(repoUrl, clonePath.filePaths[0]);
+            console.log("Repository cloned successfully.");
+            event.reply("git-operations");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error in git-repo-options:", error);
+      event.reply("git-repo-error", error.message);
     }
   });
 
