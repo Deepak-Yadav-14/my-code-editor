@@ -413,8 +413,8 @@ function createWindow() {
 
   ipcMain.on("git-commit", async (event, { message }) => {
     try {
-      await git.add("./*");
-      await git.commit(message);
+      await git.add("./*"); // Stage all changes
+      await git.commit(message); // Commit with the provided message
       console.log("Changes committed.");
     } catch (error) {
       console.error("Git commit error:", error);
@@ -423,7 +423,7 @@ function createWindow() {
 
   ipcMain.on("git-push", async () => {
     try {
-      await git.push("origin", "main");
+      await git.push("origin", "master"); // Push the main branch to the remote repository
       console.log("Changes pushed to GitHub.");
     } catch (error) {
       console.error("Git push error:", error);
@@ -445,6 +445,15 @@ function createWindow() {
       shell.openExternal(repoUrl.value);
     } catch (error) {
       console.error("Git view error:", error);
+    }
+  });
+
+  ipcMain.on("git-create-main-branch", async () => {
+    try {
+      await git.checkoutLocalBranch("main"); // Create and switch to the main branch
+      console.log("Main branch created.");
+    } catch (error) {
+      console.error("Error creating main branch:", error);
     }
   });
 
