@@ -566,18 +566,19 @@ function createWindow() {
     }
   });
 
-  ipcMain.on("git-pull", async () => {
+  ipcMain.on("git-pull", async (event, directoryPath) => {
     try {
-      await git.pull("origin", "main");
+      const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
+      await gitInstance.pull("origin", "main"); // Pull the latest changes from the remote repository
       console.log("Changes pulled from GitHub.");
     } catch (error) {
       console.error("Git pull error:", error);
     }
   });
 
-  ipcMain.on("git-view", async () => {
+  ipcMain.on("git-view", async (event, directoryPath) => {
     try {
-      const gitInstance = simpleGit();
+      const gitInstance = simpleGit(directoryPath);
       const repoUrl = await gitInstance.getConfig("remote.origin.url");
       if (repoUrl.value) {
         shell.openExternal(repoUrl.value.replace(".git", ""));
