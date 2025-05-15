@@ -214,7 +214,8 @@ window.addEventListener("DOMContentLoaded", () => {
     ipcRenderer.on("compile-output", ({ success, output }) => {
       const statusBar = document.getElementById("statusBar");
       if (success) {
-        statusBar.textContent = "Compilation Successful.";
+        statusBar.style.color = "green";
+        statusBar.text = "Compilation Successful.";
       } else {
         statusBar.textContent = "Compilation Failed: " + output;
       }
@@ -375,6 +376,17 @@ window.addEventListener("DOMContentLoaded", () => {
           break;
         default:
           console.log("No action selected.");
+      }
+    });
+
+    ipcRenderer.on("git-operation-result", (event, { success, message }) => {
+      const statusBar = document.getElementById("statusBar"); // Assuming you have a status bar element
+      if (statusBar) {
+        console.log("Git operation result:", message);
+        statusBar.textContent = message;
+        statusBar.style.color = success ? "green" : "red";
+      } else {
+        alert(message); // Fallback to an alert if no status bar is available
       }
     });
   });

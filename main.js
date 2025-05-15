@@ -551,8 +551,16 @@ function createWindow() {
       await gitInstance.add("./*"); // Stage all changes
       await gitInstance.commit(message); // Commit with the provided message
       console.log("Changes committed.");
+      event.reply("git-operation-result", {
+        success: true,
+        message: "Commit successful!",
+      });
     } catch (error) {
       console.error("Git commit error:", error);
+      event.reply("git-operation-result", {
+        success: false,
+        message: `Commit failed: ${error.message}`,
+      });
     }
   });
 
@@ -561,7 +569,15 @@ function createWindow() {
       const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
       await gitInstance.push("origin", "main"); // Push the main branch to the remote repository
       console.log("Changes pushed to GitHub.");
+      event.reply("git-operation-result", {
+        success: true,
+        message: "Push successful!",
+      });
     } catch (error) {
+      event.reply("git-operation-result", {
+        success: false,
+        message: `Push failed: ${error.message}`,
+      });
       console.error("Git push error:", error);
     }
   });
@@ -571,8 +587,16 @@ function createWindow() {
       const gitInstance = simpleGit(directoryPath); // Use the provided directoryPath
       await gitInstance.pull("origin", "main"); // Pull the latest changes from the remote repository
       console.log("Changes pulled from GitHub.");
+      event.reply("git-operation-result", {
+        success: true,
+        message: "Pull successful!",
+      });
     } catch (error) {
       console.error("Git pull error:", error);
+      event.reply("git-operation-result", {
+        success: false,
+        message: `Pull failed: ${error.message}`,
+      });
     }
   });
 

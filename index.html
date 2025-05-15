@@ -155,17 +155,13 @@
         </li>
 
       </ul>
-      <button id="runButton"
-        style="float: right; margin: 5px; padding: 5px 10px; background-color: #2196F3; color: white; border: none; cursor: pointer;">
-        Run
+      <button id="gitButton"
+        style="float: right; margin: 5px; padding: 5px 10px; background-color: #FF5722; color: white; border: none; cursor: pointer;">
+        Git
       </button>
       <button id="compileButton"
         style="float: right; margin: 5px; padding: 5px 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
         Compile
-      </button>
-      <button id="gitButton"
-        style="float: right; margin: 5px; padding: 5px 10px; background-color: #FF5722; color: white; border: none; cursor: pointer;">
-        Git
       </button>
     </div>
     <div class="codingScreen preventSelect">
@@ -217,12 +213,16 @@
       <p id="inputDialogMessage" style="margin: 0 0 10px;">Enter your input:</p>
       <input id="inputDialogInput" type="text"
         style="width: 100%; padding: 8px; margin-bottom: 10px; border: none; border-radius: 4px;" />
-      <div style="text-align: right;"> jtvk
+      <div style="text-align: right;">
         <button id="inputDialogCancel"
           style="background: #555; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Cancel</button>
         <button id="inputDialogSubmit"
           style="background: #4CAF50; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Submit</button>
       </div>
+    </div>
+    <div id="statusBar"
+      style="position: fixed; bottom: 0; width: 100%; background: #333; color: #fff; text-align: center; padding: 5px;">
+      Ready
     </div>
   </div>
 </body>
